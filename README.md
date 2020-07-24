@@ -28,4 +28,4 @@ Essendo inline, il bot funziona in qualsiasi chat.
   possibile la creazione di questo bot.
 - [Telegraf](https://github.com/telegraf/telegraf), il framework utilizzato
 per il bot.
-- As always, (Neo)VIM ❤️ .
+- As always, (Neo)VIM ❤️.
