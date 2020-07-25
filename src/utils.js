@@ -66,8 +66,7 @@ Il codice sorgente e la relativa documentazione si possono trovare a <a href="ht
 
 <b>Contatti</b>  👤
 Sono ben accetti feedback, per quanto riguarda segnalazioni di bug, proposte per miglioramenti o domande in generale sul funzionamento del bot stesso.
-Puoi contattarmi sia su <a href="https://github.com/theedoran/itabulbot">GitHub</a> aprendo una issue, oppure in privato qui su Telegram, a @TheEdoRan.
-`;
+Puoi contattarmi sia su <a href="https://github.com/theedoran/itabulbot">GitHub</a> aprendo una issue, oppure in privato qui su Telegram, a @TheEdoRan.`;
 
   reply(msg, replyExtra).catch((_) => {});
 };
@@ -110,7 +109,7 @@ export const showFWAData = async (id, ctx) => {
     });
   } catch (error) {
     return ctx.editMessageText(
-      "😕 <i>Errore nell'eseguire l'operazione.</i>",
+      "😕  <i>Errore nell'eseguire l'operazione.</i>",
       replyExtra,
     );
   }
