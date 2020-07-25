@@ -32,8 +32,9 @@ bot.on("chosen_inline_result", async (ctx) => {
 
 // Delete message on cancel button click.
 bot.action("cancel_loading", ({ editMessageText, answerCbQuery }) => {
-  editMessageText("❌  Ricerca annullata.").catch((_) => {});
-  return answerCbQuery();
+  editMessageText("❌  Ricerca annullata.")
+    .catch((_) => {})
+    .finally(answerCbQuery().catch((_) => {}));
 });
 
 // Show fiber details.
@@ -43,7 +44,7 @@ bot.action(/^show_fiber_details_\d+/, (ctx) => {
 
   showFiberData(id, ctx)
     .catch((_) => {})
-    .finally(() => ctx.answerCbQuery());
+    .finally(ctx.answerCbQuery().catch((_) => {}));
 });
 
 // Show FWA details.
@@ -53,7 +54,7 @@ bot.action(/^show_fwa_details_\d+/, (ctx) => {
 
   showFWAData(id, ctx)
     .catch((_) => {})
-    .finally(() => ctx.answerCbQuery());
+    .finally(ctx.answerCbQuery().catch((_) => {}));
 });
 
 bot.launch();

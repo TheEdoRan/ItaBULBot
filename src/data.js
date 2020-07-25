@@ -1,13 +1,16 @@
 import moment from "moment";
+import memoize from "memoizee";
 import api, { API_URL } from "./api.js";
 
 // Ugly but it works.
 const getLevel = (id) => (parseInt(id) > 21 ? "city" : "region");
 
 // Get data from API.
-const getAPIData = async (level, id) =>
-  (await api.get(`${API_URL}/opendata?format=json&level=${level}&id=${id}`))
-    .data;
+const fetchAPIData = (level, id) =>
+  api.get(`${API_URL}/opendata?format=json&level=${level}&id=${id}`);
+
+// Memoize fetch function, caching data for 6 hours.
+const memoData = memoize(fetchAPIData, { promise: true, maxAge: 21600 * 1000 });
 
 const formatDate = (date) =>
   !!date ? moment(date).format("DD/MM/YYYY") : "non disponibile";
@@ -171,7 +174,7 @@ ${getRegionStatuses(grantFWAStatus)}
 // Build fiber or FWA data, for city or region.
 const buildData = async (type, id) => {
   const level = getLevel(id);
-  const data = await getAPIData(level, id);
+  const { data } = await memoData(level, id);
 
   if (level === "city") {
     if (type === "fiber") {
