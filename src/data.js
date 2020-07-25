@@ -5,9 +5,15 @@ import api, { API_URL } from "./api.js";
 // Ugly but it works.
 const getLevel = (id) => (parseInt(id) > 21 ? "city" : "region");
 
-// Get data from API.
-const fetchAPIData = (level, id) =>
-  api.get(`${API_URL}/opendata?format=json&level=${level}&id=${id}`);
+// Get data from API. Return data and current time (for last update indicator).
+const fetchAPIData = async (level, id) => {
+  let res = await api.get(
+    `${API_URL}/opendata?format=json&level=${level}&id=${id}`,
+  );
+  res.data.last_update_time = moment().toDate();
+
+  return res;
+};
 
 // Memoize fetch function, caching data for 6 hours.
 const memoData = memoize(fetchAPIData, { promise: true, maxAge: 21600 * 1000 });
@@ -42,6 +48,7 @@ const buildCityFiberData = (data) => {
 <b>Fibra ottica</b>
 
 Stato lavori: <b>${progress.status || "non disponibile"}</b>
+Tipo di intervento: ${data.intervento.fiber || "non disponibile"}
 
 Previsioni:
   Avvio lavori: ${formatDate(dates.data_prevista_avvio_lavori)}
@@ -61,10 +68,6 @@ Informazioni PCN:
   Cab transitorio: ${data.pcn.cab_transitorio ? "sì" : "no"}`;
   }
 
-  msg += `
-
-Tipo di intervento: ${data.intervento.fiber || "non disponibile"}`;
-
   return msg;
 };
 
@@ -80,13 +83,12 @@ const buildCityFWAData = (data) => {
 <b>FWA</b>
 
 Stato lavori: <b>${progress.status || "non disponibile"}</b>
+Tipo di intervento: ${data.intervento.wireless || "non disponibile"}
 
 Previsioni:
   Avvio lavori: ${formatDate(dates.data_prevista_avvio_lavori)}
   Chiusura lavori: ${formatDate(dates.data_prevista_chiusura_lavori)}
-  Operatività: ${formatDate(dates.data_prevista_operativita)}
-
-Tipo di intervento: ${data.intervento.wireless || "non disponibile"}`;
+  Operatività: ${formatDate(dates.data_prevista_operativita)}`;
 
   return msg;
 };
@@ -138,8 +140,7 @@ Concessione:
   Città pianificate: ${data.intervento.concessione.fiber}
 
   Stato lavori:
-${getRegionStatuses(grantFiberStatus)}
-  `;
+${getRegionStatuses(grantFiberStatus)}`;
 
   return msg;
 };
@@ -165,8 +166,7 @@ Concessione:
   Città pianificate: ${data.intervento.concessione.wireless}
 
   Stato lavori:
-${getRegionStatuses(grantFWAStatus)}
-`;
+${getRegionStatuses(grantFWAStatus)}`;
 
   return msg;
 };
@@ -176,19 +176,30 @@ const buildData = async (type, id) => {
   const level = getLevel(id);
   const { data } = await memoData(level, id);
 
+  let msg = "";
+
   if (level === "city") {
     if (type === "fiber") {
-      return buildCityFiberData(data);
+      msg = buildCityFiberData(data);
     } else {
-      return buildCityFWAData(data);
+      msg = buildCityFWAData(data);
     }
   } else {
     if (type === "fiber") {
-      return buildRegionFiberData(data);
+      msg = buildRegionFiberData(data);
     } else {
-      return buildRegionFWAData(data);
+      msg = buildRegionFWAData(data);
     }
   }
+
+  const lastTime = `${moment(data.last_update_time).format("HH:mm")}`;
+  const lastDate = `${moment(data.last_update_time).format("DD/MM/YYYY")}`;
+
+  msg += `
+
+<i>Ultimo aggiornamento alle ${lastTime} del ${lastDate}</i>`;
+
+  return msg;
 };
 
 // Build fiber data based on id.
