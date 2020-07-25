@@ -37,21 +37,23 @@ bot.action("cancel_loading", ({ editMessageText, answerCbQuery }) => {
 });
 
 // Show fiber details.
-bot.action(/^show_fiber_details_\d+/, async (ctx) => {
+bot.action(/^show_fiber_details_\d+/, (ctx) => {
   const { data } = ctx.callbackQuery;
   const id = data.slice(data.lastIndexOf("_") + 1);
 
-  await showFiberData(id, ctx);
-  return ctx.answerCbQuery();
+  showFiberData(id, ctx)
+    .catch((_) => {})
+    .finally(() => ctx.answerCbQuery());
 });
 
 // Show FWA details.
-bot.action(/^show_fwa_details_\d+/, async (ctx) => {
+bot.action(/^show_fwa_details_\d+/, (ctx) => {
   const { data } = ctx.callbackQuery;
   const id = data.slice(data.lastIndexOf("_") + 1);
 
-  await showFWAData(id, ctx);
-  return ctx.answerCbQuery();
+  showFWAData(id, ctx)
+    .catch((_) => {})
+    .finally(() => ctx.answerCbQuery());
 });
 
 bot.launch();

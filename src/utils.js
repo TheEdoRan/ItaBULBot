@@ -77,7 +77,7 @@ export const showFiberData = async (id, ctx) => {
     const data = await buildFiberData(id);
 
     // Update message with data.
-    ctx.editMessageText(data, {
+    return ctx.editMessageText(data, {
       ...replyExtra,
       reply_markup: Markup.inlineKeyboard([
         Markup.callbackButton(
@@ -87,7 +87,7 @@ export const showFiberData = async (id, ctx) => {
       ]),
     });
   } catch (error) {
-    ctx.editMessageText(
+    return ctx.editMessageText(
       "😕  <i>Errore nell'eseguire l'operazione.</i>",
       replyExtra,
     );
@@ -99,7 +99,7 @@ export const showFWAData = async (id, ctx) => {
     const data = await buildFWAData(id);
 
     // Update message with data.
-    ctx.editMessageText(data, {
+    return ctx.editMessageText(data, {
       ...replyExtra,
       reply_markup: Markup.inlineKeyboard([
         Markup.callbackButton(
@@ -109,7 +109,7 @@ export const showFWAData = async (id, ctx) => {
       ]),
     });
   } catch (error) {
-    ctx.editMessageText(
+    return ctx.editMessageText(
       "😕 <i>Errore nell'eseguire l'operazione.</i>",
       replyExtra,
     );
