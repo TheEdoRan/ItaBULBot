@@ -11,6 +11,6 @@ const JSON_PATH = path.join(__dirname, "..", "json");
 const parseJson = (filename) =>
   JSON.parse(fs.readFileSync(`${JSON_PATH}/${filename}.json`));
 
-// Get regions from JSON.
+// Get data from JSONs.
 export const regions = parseJson("regions");
 export const cities = parseJson("cities");

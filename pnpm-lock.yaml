@@ -1,9 +1,9 @@
 dependencies:
   axios: 0.19.2
   dotenv: 8.2.0
+  html-escape: 2.0.0
   moment: 2.27.0
   telegraf: 3.38.0
-  uuid: 8.2.0
 lockfileVersion: 5.1
 packages:
   /axios/0.19.2:
@@ -38,6 +38,10 @@ packages:
       node: '>=4.0'
     resolution:
       integrity: sha512-0V5l4Cizzvqt5D44aTXbFZz+FtyXV1vrDN6qrelxtfYQKW0KO0W2T/hkE8xvGa/540LkZlkaUjO4ailYTFtHVQ==
+  /html-escape/2.0.0:
+    dev: false
+    resolution:
+      integrity: sha1-YMjd1GXt8MrgKvnpn99fiDsJvkk=
   /minimist/1.2.5:
     dev: false
     resolution:
@@ -88,14 +92,9 @@ packages:
     dev: false
     resolution:
       integrity: sha512-njVv1EAhIZnmQVLocZEADYUyqA1WIXuVcDYlsp+mXua/XB0pxx+PKtMSPeZ/EE4wPWTw9h/hA9ASTT6yQelkiw==
-  /uuid/8.2.0:
-    dev: false
-    hasBin: true
-    resolution:
-      integrity: sha512-CYpGiFTUrmI6OBMkAdjSDM0k5h8SkkiTP4WAjQgDgNB1S3Ou9VBEvr6q0Kv2H1mMk7IWfxYGpMH5sd5AvcIV2Q==
 specifiers:
   axios: ^0.19.2
   dotenv: ^8.2.0
+  html-escape: ^2.0.0
   moment: ^2.27.0
   telegraf: ^3.38.0
-  uuid: ^8.2.0

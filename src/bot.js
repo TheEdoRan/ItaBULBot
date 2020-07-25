@@ -2,9 +2,19 @@ import {} from "dotenv/config.js";
 import TG from "telegraf";
 const { Telegraf } = TG;
 
-import { buildResults, showFiberData, showFWAData } from "./utils.js";
+import { showHelp, buildResults, showFiberData, showFWAData } from "./utils.js";
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
+
+bot.telegram
+  .getMe()
+  .then((info) => (bot.options.username = info.username))
+  .catch((_) => {});
+
+// Start/help command.
+bot.command(["start", "aiuto"], (ctx) => {
+  showHelp(ctx);
+});
 
 // Display cities/regions in inline query.
 bot.on("inline_query", ({ inlineQuery, answerInlineQuery }) => {

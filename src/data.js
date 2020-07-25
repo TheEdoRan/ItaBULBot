@@ -109,11 +109,10 @@ Percentuale completamento:
   FWA: <b>${percentages.wireless.toFixed(2)}%</b>`;
 };
 
-const getRegionStatuses = (context) => {
-  return Object.entries(context)
+const getRegionStatuses = (context) =>
+  Object.entries(context)
     .map(([k, v]) => `    ${k}: ${v}`)
     .join("\n");
-};
 
 const buildRegionFiberData = (data) => {
   let msg = getRegionBaseData(data);
@@ -190,11 +189,7 @@ const buildData = async (type, id) => {
 };
 
 // Build fiber data based on id.
-export const buildFiberData = (id) => {
-  return buildData("fiber", id);
-};
+export const buildFiberData = (id) => buildData("fiber", id);
 
 // Build FWA data based on id.
-export const buildFWAData = (id) => {
-  return buildData("fwa", id);
-};
+export const buildFWAData = (id) => buildData("fwa", id);
