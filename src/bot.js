@@ -55,7 +55,7 @@ bot.action(/^show_fiber_details_\d+/, (ctx) => {
 
   showFiberData(id, ctx)
     .catch((_) => {})
-    .finally(ctx.answerCbQuery().catch((_) => {}));
+    .finally(() => ctx.answerCbQuery().catch((_) => {}));
 });
 
 // Show FWA details.
@@ -65,7 +65,7 @@ bot.action(/^show_fwa_details_\d+/, (ctx) => {
 
   showFWAData(id, ctx)
     .catch((_) => {})
-    .finally(ctx.answerCbQuery().catch((_) => {}));
+    .finally(() => ctx.answerCbQuery().catch((_) => {}));
 });
 
 bot.launch();
