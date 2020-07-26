@@ -114,9 +114,9 @@ Percentuale completamento:
   FWA: <b>${percentages.wireless.toFixed(2)}%</b>`;
 };
 
-const getRegionStatuses = (context) =>
+const getRegionWorkStatuses = (context) =>
   Object.entries(context)
-    .map(([k, v]) => `    ${k}: ${v}`)
+    .map(([k, v]) => `    ${k[0].toUpperCase() + k.slice(1)}: ${v}`)
     .join("\n");
 
 const buildRegionFiberData = (data) => {
@@ -134,13 +134,13 @@ Intervento diretto:
   Città pianificate: ${data.intervento.diretto.fiber}
 
   Stato lavori:
-${getRegionStatuses(directFiberStatus)}
+${getRegionWorkStatuses(directFiberStatus)}
 
 Concessione:
   Città pianificate: ${data.intervento.concessione.fiber}
 
   Stato lavori:
-${getRegionStatuses(grantFiberStatus)}`;
+${getRegionWorkStatuses(grantFiberStatus)}`;
 
   return msg;
 };
@@ -160,13 +160,13 @@ Intervento diretto:
   Città pianificate: ${data.intervento.diretto.wireless}
 
   Stato lavori:
-${getRegionStatuses(directFWAStatus)}
+${getRegionWorkStatuses(directFWAStatus)}
 
 Concessione:
   Città pianificate: ${data.intervento.concessione.wireless}
 
   Stato lavori:
-${getRegionStatuses(grantFWAStatus)}`;
+${getRegionWorkStatuses(grantFWAStatus)}`;
 
   return msg;
 };
