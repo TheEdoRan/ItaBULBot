@@ -5,18 +5,19 @@ import api, { API_URL } from "./api.js";
 // Ugly but it works.
 const getLevel = (id) => (parseInt(id) > 21 ? "city" : "region");
 
-// Get data from API. Return data and current time (for last update indicator).
-const fetchAPIData = async (level, id) => {
-  let res = await api.get(
-    `${API_URL}/opendata?format=json&level=${level}&id=${id}`,
-  );
-  res.data.last_update_time = moment().toDate();
+// Get data from API.
+const fetchAPIData = (level, id) =>
+  api.get(`${API_URL}/opendata?format=json&level=${level}&id=${id}`);
 
-  return res;
-};
+// Get last update time from API.
+const fetchLastUpdate = () => api.get(`${API_URL}/latest-import`);
 
-// Memoize fetch function, caching data for 6 hours.
-const memoData = memoize(fetchAPIData, { promise: true, maxAge: 21600 * 1000 });
+// Options for memoization.
+const memoOpts = { promise: true, maxAge: 21600 * 1000 };
+
+// Memoize fetch functions, caching data for 6 hours.
+const memoData = memoize(fetchAPIData, memoOpts);
+const memoLastUpdate = memoize(fetchLastUpdate, memoOpts);
 
 const formatDate = (date) =>
   !!date ? moment(date).format("DD/MM/YYYY") : "non disponibile";
@@ -35,7 +36,7 @@ Regione: ${data.region_name}
 Popolazione: ${data.people_data.people}
 Unità immobiliari: ${data.people_data.houses}`;
 
-// Get fiber data for cities only.
+// Build fiber data.
 const buildCityFiberData = (data) => {
   let msg = getCityBaseData(data);
 
@@ -71,6 +72,7 @@ Informazioni PCN:
   return msg;
 };
 
+// Build FWA data.
 const buildCityFWAData = (data) => {
   let msg = getCityBaseData(data);
 
@@ -97,6 +99,7 @@ Previsioni:
      REGION
 ****************/
 
+// Get shared data, both for fiber and FWA.
 const getRegionBaseData = (data) => {
   const peopleData = data.people_data;
   const workProgress = data.work_progress;
@@ -114,11 +117,13 @@ Percentuale completamento:
   FWA: <b>${percentages.wireless.toFixed(2)}%</b>`;
 };
 
+// Get various work statuses.
 const getRegionWorkStatuses = (context) =>
   Object.entries(context)
     .map(([k, v]) => `    ${k[0].toUpperCase() + k.slice(1)}: ${v}`)
     .join("\n");
 
+// Build fiber data.
 const buildRegionFiberData = (data) => {
   let msg = getRegionBaseData(data);
 
@@ -145,6 +150,7 @@ ${getRegionWorkStatuses(grantFiberStatus)}`;
   return msg;
 };
 
+// Build FWA data.
 const buildRegionFWAData = (data) => {
   let msg = getRegionBaseData(data);
 
@@ -175,6 +181,10 @@ ${getRegionWorkStatuses(grantFWAStatus)}`;
 const buildData = async (type, id) => {
   const level = getLevel(id);
   const { data } = await memoData(level, id);
+  const { data: lastUpdate } = await memoLastUpdate();
+
+  // Last work status update date.
+  const lastDate = lastUpdate.work_status.date;
 
   let msg = "";
 
@@ -192,12 +202,13 @@ const buildData = async (type, id) => {
     }
   }
 
-  const lastTime = `${moment(data.last_update_time).format("HH:mm")}`;
-  const lastDate = `${moment(data.last_update_time).format("DD/MM/YYYY")}`;
+  // Format last time and day.
+  const lastTime = `${moment(lastDate).format("HH:mm")}`;
+  const lastDay = `${moment(lastDate).format("DD/MM/YYYY")}`;
 
   msg += `
 
-<i>Ultimo aggiornamento alle ${lastTime} del ${lastDate}</i>`;
+<i>Ultimo aggiornamento alle ${lastTime} del ${lastDay}</i>`;
 
   return msg;
 };
