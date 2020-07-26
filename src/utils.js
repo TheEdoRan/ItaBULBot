@@ -6,7 +6,11 @@ import { buildFiberData, buildFWAData } from "./data.js";
 
 const substring = (s1, s2) => s1.toLowerCase().includes(s2.toLowerCase());
 
-const replyExtra = { parse_mode: "HTML", disable_web_page_preview: true };
+// Extra Telegram options for message edit/send.
+const msgExtra = { parse_mode: "HTML", disable_web_page_preview: true };
+
+// Set containing pending cancel requests.
+export const cancelRequests = new Set();
 
 // Template for query result.
 const buildResult = (id, title, description) => ({
@@ -15,8 +19,8 @@ const buildResult = (id, title, description) => ({
   title,
   description,
   input_message_content: {
-    message_text: "_Scaricando informazioni..._",
-    parse_mode: "Markdown",
+    message_text: "<i>Scaricando informazioni...</i>",
+    ...msgExtra,
   },
   reply_markup: Markup.inlineKeyboard([
     Markup.callbackButton("❌  Cancella operazione", "cancel_loading"),
@@ -68,16 +72,28 @@ Il codice sorgente e la relativa documentazione si possono trovare a <a href="ht
 Sono ben accetti feedback, per quanto riguarda segnalazioni di bug, proposte per miglioramenti o domande in generale sul funzionamento del bot stesso.
 Puoi contattarmi sia su <a href="https://github.com/theedoran/itabulbot">GitHub</a> aprendo una issue, oppure in privato qui su Telegram, a @TheEdoRan.`;
 
-  reply(msg, replyExtra).catch((_) => {});
+  reply(msg, msgExtra).catch((_) => {});
 };
 
 export const showFiberData = async (id, ctx) => {
+  // Only get msgId if we're processing a chosen inline result
+  // (default fiber view).
+  const msgId = ctx.chosenInlineResult
+    ? ctx.chosenInlineResult.inline_message_id
+    : null;
+
   try {
     const data = await buildFiberData(id);
 
+    // Check if we should cancel the operation (user pressed on cancel button).
+    if (cancelRequests.has(msgId)) {
+      cancelRequests.delete(msgId);
+      return;
+    }
+
     // Update message with data.
     return ctx.editMessageText(data, {
-      ...replyExtra,
+      ...msgExtra,
       reply_markup: Markup.inlineKeyboard([
         Markup.callbackButton(
           "📡  Mostra informazioni su FWA",
@@ -88,7 +104,7 @@ export const showFiberData = async (id, ctx) => {
   } catch (error) {
     return ctx.editMessageText(
       "😕  <i>Errore nell'eseguire l'operazione.</i>",
-      replyExtra,
+      msgExtra,
     );
   }
 };
@@ -99,7 +115,7 @@ export const showFWAData = async (id, ctx) => {
 
     // Update message with data.
     return ctx.editMessageText(data, {
-      ...replyExtra,
+      ...msgExtra,
       reply_markup: Markup.inlineKeyboard([
         Markup.callbackButton(
           "🌐  Mostra informazioni su fibra ottica",
@@ -110,7 +126,7 @@ export const showFWAData = async (id, ctx) => {
   } catch (error) {
     return ctx.editMessageText(
       "😕  <i>Errore nell'eseguire l'operazione.</i>",
-      replyExtra,
+      msgExtra,
     );
   }
 };
