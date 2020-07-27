@@ -26,6 +26,8 @@ Essendo inline, il bot funziona in qualsiasi chat.
 ## Ringraziamenti
 - Il [sito BUL](http://bandaultralarga.italia.it) per l'idea e per aver reso
   possibile la creazione di questo bot.
+- [Antonio](https://github.com/Pitasi), per avermi aiutato con i dati di
+  OpenFiber.
 - [Telegraf](https://github.com/telegraf/telegraf), il framework utilizzato
 per il bot.
 - As always, (Neo)VIM ❤️.
