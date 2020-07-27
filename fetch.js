@@ -1,7 +1,7 @@
 import fs from "fs";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import api, { API_URL } from "./api.js";
+import { bulApi } from "./src/api.js";
 
 // Get current file path.
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -17,15 +17,13 @@ if (!fs.existsSync(JSON_PATH)) {
 (async () => {
   try {
     // Fetch region IDs.
-    let { data: regions } = await api.get(`${API_URL}/regions`);
+    let { data: regions } = await bulApi("/regions");
 
     // Fix some stupid API shit.
     regions = regions.map((r) => ({
       id: r.region_id,
       name: r.region_id === 21 ? "Trentino Alto Adige - Trento" : r.region_name,
     }));
-
-    regions.push({ id: 4, name: "Trentino Alto Adige - Bolzano" });
 
     // Write regions to JSON.
     fs.writeFileSync(
@@ -41,9 +39,7 @@ if (!fs.existsSync(JSON_PATH)) {
 
     for (let r of regions) {
       // Get cities for the region.
-      let { data: citiesData } = await api.get(
-        `${API_URL}/region/${r.id}/cities`,
-      );
+      const { data: citiesData } = await bulApi(`/region/${r.id}/cities`);
 
       allCities.push(
         ...citiesData.map((c) => ({

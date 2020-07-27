@@ -1,16 +1,34 @@
 import moment from "moment";
 import memoize from "memoizee";
-import api, { API_URL } from "./api.js";
+import { bulApi, ofApi } from "./api.js";
 
 // Ugly but it works.
 const getLevel = (id) => (parseInt(id) > 21 ? "city" : "region");
 
-// Get data from API.
-const fetchAPIData = (level, id) =>
-  api.get(`${API_URL}/opendata?format=json&level=${level}&id=${id}`);
-
 // Get last update time from API.
-const fetchLastUpdate = () => api.get(`${API_URL}/latest-import`);
+const fetchLastUpdate = async () => (await bulApi(`/latest-import`)).data;
+
+// Get data from API.
+const fetchAPIData = async (level, id) => {
+  let { data } = await bulApi(`/opendata?format=json&level=${level}&id=${id}`);
+
+  // Only gather these infos for city level. Regions don't need them.
+  if (level === "city") {
+    const cityName = data.city_name;
+    const provId = data.province_id;
+
+    // Call OF API to find out OF ID of city, via its name.
+    const ofCityId = (await ofApi(`/list/cities/${provId}`)).data.data.filter(
+      (city) => city.name === cityName,
+    )[0].id;
+
+    const ofCityData = (await ofApi(`/site/${ofCityId}`)).data;
+
+    data.of = ofCityData;
+  }
+
+  return data;
+};
 
 // Options for memoization.
 const memoOpts = { promise: true, maxAge: 21600 * 1000 };
@@ -34,7 +52,27 @@ Provincia: ${data.province_name}
 Regione: ${data.region_name}
 
 Popolazione: ${data.people_data.people}
-Unità immobiliari: ${data.people_data.houses}`;
+Unità immobiliari totali: ${data.people_data.houses}
+
+Bando:
+  Gara ${data.of.gara} - Lotto ${data.of.lotto} - Fase ${data.of.fase}
+
+Piano cantiere: ${data.of.piano_cantiere}`;
+
+// Get Open Fiber data for city.
+const getCityOfFiberData = (of) => {
+  if (of.is_empty_ftth) {
+    return "";
+  }
+
+  return `
+Unità immobiliari: ${of.ui_ftth}
+PAC/PAL: ${of.pac_pal}
+Importo OdE: ${of.importo_ode_ftth.trim()}€
+Impresa esecutrice: ${of.impresa_esecutrice_ftth}
+Fornitore DL/CSE: ${of.fornitore_dl_cse_ftth}
+`;
+};
 
 // Build fiber data.
 const buildCityFiberData = (data) => {
@@ -47,7 +85,7 @@ const buildCityFiberData = (data) => {
   msg += `
 
 <b>Fibra ottica</b>
-
+${getCityOfFiberData(data.of)}
 Stato lavori: <b>${progress.status || "non disponibile"}</b>
 Tipo di intervento: ${data.intervento.fiber || "non disponibile"}
 
@@ -72,6 +110,20 @@ Informazioni PCN:
   return msg;
 };
 
+// Get Open Fiber data for city.
+const getCityOfFWAData = (of) => {
+  if (of.is_empty_fwa) {
+    return "";
+  }
+
+  return `
+Unità immobiliari: ${of.ui_fwa}
+Importo OdE: ${of.importo_ode_fwa.trim()}€
+Impresa esecutrice: ${of.impresa_esecutrice_fwa}
+Fornitore DL/CSE: ${of.fornitore_dl_cse_fwa}
+`;
+};
+
 // Build FWA data.
 const buildCityFWAData = (data) => {
   let msg = getCityBaseData(data);
@@ -83,7 +135,7 @@ const buildCityFWAData = (data) => {
   msg += `
 
 <b>FWA</b>
-
+${getCityOfFWAData(data.of)}
 Stato lavori: <b>${progress.status || "non disponibile"}</b>
 Tipo di intervento: ${data.intervento.wireless || "non disponibile"}
 
@@ -109,7 +161,7 @@ const getRegionBaseData = (data) => {
 <b>${data.region_name}</b>
 
 Popolazione: ${peopleData.people}
-Unità immobiliari: ${peopleData.houses}
+Unità immobiliari totali: ${peopleData.houses}
 Città: ${peopleData.cities}
 
 Percentuale completamento:
@@ -180,8 +232,8 @@ ${getRegionWorkStatuses(grantFWAStatus)}`;
 // Build fiber or FWA data, for city or region.
 const buildData = async (type, id) => {
   const level = getLevel(id);
-  const { data } = await memoData(level, id);
-  const { data: lastUpdate } = await memoLastUpdate();
+  const lastUpdate = await memoLastUpdate();
+  const apiData = await memoData(level, id);
 
   // Last work status update date.
   const lastDate = lastUpdate.work_status.date;
@@ -190,15 +242,15 @@ const buildData = async (type, id) => {
 
   if (level === "city") {
     if (type === "fiber") {
-      msg = buildCityFiberData(data);
+      msg = buildCityFiberData(apiData);
     } else {
-      msg = buildCityFWAData(data);
+      msg = buildCityFWAData(apiData);
     }
   } else {
     if (type === "fiber") {
-      msg = buildRegionFiberData(data);
+      msg = buildRegionFiberData(apiData);
     } else {
-      msg = buildRegionFWAData(data);
+      msg = buildRegionFWAData(apiData);
     }
   }
 
