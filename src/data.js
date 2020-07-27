@@ -17,14 +17,18 @@ const fetchAPIData = async (level, id) => {
     const cityName = data.city_name;
     const provId = data.province_id;
 
-    // Call OF API to find out OF ID of city, via its name.
-    const ofCityId = (await ofApi(`/list/cities/${provId}`)).data.data.filter(
-      (city) => city.name === cityName,
-    )[0].id;
+    try {
+      // Call OF API to find out OF ID of city, via its name.
+      const ofCityId = (await ofApi(`/list/cities/${provId}`)).data.data.filter(
+        (city) => city.name === cityName,
+      )[0].id;
 
-    const ofCityData = (await ofApi(`/site/${ofCityId}`)).data;
+      const ofCityData = (await ofApi(`/site/${ofCityId}`)).data;
 
-    data.of = ofCityData;
+      data.of = ofCityData;
+    } catch (_) {
+      data.of = null;
+    }
   }
 
   return data;
@@ -45,32 +49,43 @@ const formatDate = (date) =>
 ****************/
 
 // Get shared data, both for fiber and FWA.
-const getCityBaseData = (data) => `
+const getCityBaseData = (data) => {
+  let msg = `
 <b>${data.city_name}</b>
 
 Provincia: ${data.province_name}
 Regione: ${data.region_name}
 
 Popolazione: ${data.people_data.people}
-Unità immobiliari totali: ${data.people_data.houses}
+Unità immobiliari totali: ${data.people_data.houses}`;
+
+  // Only if city has OpenFiber data.
+  if (data.of) {
+    msg += `
 
 Bando:
   Gara ${data.of.gara} - Lotto ${data.of.lotto} - Fase ${data.of.fase}
 
 Piano cantiere: ${data.of.piano_cantiere}`;
+  }
+
+  return msg;
+};
 
 // Get Open Fiber data for city.
 const getCityOfFiberData = (of) => {
-  if (of.is_empty_ftth) {
+  if (!of || of.is_empty_ftth) {
     return "";
   }
 
   return `
-Unità immobiliari: ${of.ui_ftth}
-PAC/PAL: ${of.pac_pal}
-Importo OdE: ${of.importo_ode_ftth.trim()}€
-Impresa esecutrice: ${of.impresa_esecutrice_ftth}
-Fornitore DL/CSE: ${of.fornitore_dl_cse_ftth}
+Unità immobiliari: ${of.ui_ftth || "non disponibile"}
+PAC/PAL: ${of.pac_pal || "non disponibile"}
+Importo OdE: ${
+    of.importo_ode_ftth ? of.importo_ode_ftth.trim() + "€" : "non disponibile"
+  }
+Impresa esecutrice: ${of.impresa_esecutrice_ftth || "non disponibile"}
+Fornitore DL/CSE: ${of.fornitore_dl_cse_ftth || "non disponibile"}
 `;
 };
 
@@ -112,15 +127,17 @@ Informazioni PCN:
 
 // Get Open Fiber data for city.
 const getCityOfFWAData = (of) => {
-  if (of.is_empty_fwa) {
+  if (!of || of.is_empty_fwa) {
     return "";
   }
 
   return `
-Unità immobiliari: ${of.ui_fwa}
-Importo OdE: ${of.importo_ode_fwa.trim()}€
-Impresa esecutrice: ${of.impresa_esecutrice_fwa}
-Fornitore DL/CSE: ${of.fornitore_dl_cse_fwa}
+Unità immobiliari: ${of.ui_fwa || "non disponibile"}
+Importo OdE: ${
+    of.importo_ode_fwa ? of.importo_ode_fwa.trim() + "€" : "non disponibile"
+  }
+Impresa esecutrice: ${of.impresa_esecutrice_fwa || "non disponibile"}
+Fornitore DL/CSE: ${of.fornitore_dl_cse_fwa || "non disponibile"}
 `;
 };
 
