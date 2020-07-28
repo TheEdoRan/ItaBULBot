@@ -97,6 +97,12 @@ const buildCityFiberData = (data) => {
   const progress = data.work_progress.fiber;
   const dates = progress.dates;
 
+  // Check for fiber data display. If city has no work progress status,
+  // it shouldn't have other infos too.
+  if (!progress.status) {
+    return `${msg}\n\n<b>Non ci sono dati disponibili per la fibra ottica.</b>`;
+  }
+
   msg += `
 
 <b>Fibra ottica</b>
@@ -148,6 +154,12 @@ const buildCityFWAData = (data) => {
   // Get current fiber work progress.
   const progress = data.work_progress.wireless;
   const dates = progress.dates;
+
+  // Check for FWA data display. If city has no work progress status,
+  // it shouldn't have other infos too.
+  if (!progress.status) {
+    return `${msg}\n\n<b>Non ci sono dati disponibili per l'FWA.</b>`;
+  }
 
   msg += `
 
