@@ -72,11 +72,8 @@ bot.action(/^show_fwa_details_\d+/, (ctx) => {
 // Otherwise just poll.
 if (process.env.NODE_ENV === "production") {
   bot.telegram.setWebhook(`${process.env.DOMAIN_URL}/${process.env.BOT_TOKEN}`);
-  bot.telegram.startWebhook(
-    `/${process.env.BOT_TOKEN}`,
-    null,
-    process.env.HOOK_PORT,
-  );
+
+  bot.startWebhook(`/${process.env.BOT_TOKEN}`, null, process.env.HOOK_PORT);
 } else {
   bot.launch();
 }
