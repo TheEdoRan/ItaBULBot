@@ -14,3 +14,4 @@ const parseJson = (filename) =>
 // Get data from JSONs.
 export const regions = parseJson("regions");
 export const cities = parseJson("cities");
+export const sinfiRegions = parseJson("sinfi_regions");
