@@ -19,7 +19,7 @@ bot.telegram
 
 // Start/help command.
 bot.command(["start", "aiuto"], (ctx) => {
-  showHelp(ctx);
+  return showHelp(ctx).catch((_) => {});
 });
 
 // Display cities/regions in inline query.
@@ -34,14 +34,14 @@ bot.on("chosen_inline_result", (ctx) => {
   const id = ctx.chosenInlineResult.result_id;
 
   // Display fiber data by default.
-  showFiberData(id, ctx).catch((_) => {});
+  return showFiberData(id, ctx).catch((_) => {});
 });
 
 // Delete message on cancel button click.
 bot.action("cancel_loading", (ctx) => {
   const msgId = ctx.callbackQuery.inline_message_id;
 
-  ctx
+  return ctx
     .editMessageText("❌  Ricerca annullata.")
     .then((_) => cancelRequests.add(msgId))
     .catch((_) => {})
@@ -53,7 +53,7 @@ bot.action(/^show_fiber_details_\d+/, (ctx) => {
   const { data } = ctx.callbackQuery;
   const id = data.slice(data.lastIndexOf("_") + 1);
 
-  showFiberData(id, ctx)
+  return showFiberData(id, ctx)
     .catch((_) => {})
     .finally(() => ctx.answerCbQuery().catch((_) => {}));
 });
@@ -63,9 +63,20 @@ bot.action(/^show_fwa_details_\d+/, (ctx) => {
   const { data } = ctx.callbackQuery;
   const id = data.slice(data.lastIndexOf("_") + 1);
 
-  showFWAData(id, ctx)
+  return showFWAData(id, ctx)
     .catch((_) => {})
     .finally(() => ctx.answerCbQuery().catch((_) => {}));
 });
 
-bot.launch();
+// If env is produnction, start webhook (Nginx as rev proxy).
+// Otherwise just poll.
+if (process.env.NODE_ENV === "production") {
+  bot.telegram.setWebhook(`${process.env.DOMAIN_URL}/${process.env.BOT_TOKEN}`);
+  bot.telegram.startWebhook(
+    `/${process.env.BOT_TOKEN}`,
+    null,
+    process.env.HOOK_PORT,
+  );
+} else {
+  bot.launch();
+}

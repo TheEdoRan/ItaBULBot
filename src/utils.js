@@ -42,7 +42,7 @@ export const buildResults = (query) =>
     .slice(0, 50);
 
 // For /start and /aiuto.
-export const showHelp = ({ from, reply }) => {
+export const showHelp = async ({ from, reply }) => {
   const msg = `
 Ciao <b>${escape(from.first_name)}</b> 👋!
 
@@ -72,7 +72,7 @@ Il codice sorgente e la relativa documentazione si possono trovare a <a href="ht
 Sono ben accetti feedback, per quanto riguarda segnalazioni di bug, proposte per miglioramenti o domande in generale sul funzionamento del bot stesso.
 Puoi contattarmi sia su <a href="https://github.com/theedoran/itabulbot">GitHub</a> aprendo una issue, oppure in privato qui su Telegram, a @TheEdoRan.`;
 
-  reply(msg, msgExtra).catch((_) => {});
+  return reply(msg, msgExtra);
 };
 
 export const showFiberData = async (id, ctx) => {
