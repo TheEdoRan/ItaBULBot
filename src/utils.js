@@ -83,7 +83,21 @@ export const showFiberData = async (id, ctx) => {
     : null;
 
   try {
-    const data = await buildFiberData(id);
+    const { message, sinfiZipPath } = await buildFiberData(id);
+
+    let buttons = [
+      Markup.callbackButton("📡  Dettagli FWA", `show_fwa_details_${id}`),
+    ];
+
+    // Only display SINFI details if URL for this city exists.
+    if (sinfiZipPath) {
+      buttons.push(
+        Markup.callbackButton(
+          "📚  Dettagli SINFI",
+          `show_sinfi_details_fiber_${id}_${sinfiZipPath}`,
+        ),
+      );
+    }
 
     // Check if we should cancel the operation (user pressed on cancel button).
     if (cancelRequests.has(msgId)) {
@@ -92,14 +106,9 @@ export const showFiberData = async (id, ctx) => {
     }
 
     // Update message with data.
-    return ctx.editMessageText(data, {
+    return ctx.editMessageText(message, {
       ...msgExtra,
-      reply_markup: Markup.inlineKeyboard([
-        Markup.callbackButton(
-          "📡  Mostra informazioni su FWA",
-          `show_fwa_details_${id}`,
-        ),
-      ]),
+      reply_markup: Markup.inlineKeyboard(buttons),
     });
   } catch (error) {
     return ctx.editMessageText(
@@ -111,17 +120,26 @@ export const showFiberData = async (id, ctx) => {
 
 export const showFWAData = async (id, ctx) => {
   try {
-    const data = await buildFWAData(id);
+    const { message, sinfiZipPath } = await buildFWAData(id);
+
+    let buttons = [
+      Markup.callbackButton("🌐  Dettagli Fibra", `show_fiber_details_${id}`),
+    ];
+
+    // Only display SINFI details if URL for this city exists.
+    if (sinfiZipPath) {
+      buttons.push(
+        Markup.callbackButton(
+          "📚  Dettagli SINFI",
+          `show_sinfi_details_fwa_${id}_${sinfiZipPath}`,
+        ),
+      );
+    }
 
     // Update message with data.
-    return ctx.editMessageText(data, {
+    return ctx.editMessageText(message, {
       ...msgExtra,
-      reply_markup: Markup.inlineKeyboard([
-        Markup.callbackButton(
-          "🌐  Mostra informazioni su fibra ottica",
-          `show_fiber_details_${id}`,
-        ),
-      ]),
+      reply_markup: Markup.inlineKeyboard(buttons),
     });
   } catch (error) {
     return ctx.editMessageText(
@@ -130,3 +148,5 @@ export const showFWAData = async (id, ctx) => {
     );
   }
 };
+
+export const showSinfiDetails = (prevStatus, cityId, zipName) => {};

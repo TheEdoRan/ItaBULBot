@@ -7,6 +7,7 @@ import {
   buildResults,
   showFiberData,
   showFWAData,
+  showSinfiDetails,
   cancelRequests,
 } from "./utils.js";
 
@@ -68,11 +69,20 @@ bot.action(/^show_fwa_details_\d+/, (ctx) => {
     .finally(() => ctx.answerCbQuery().catch((_) => {}));
 });
 
+// Show SINFI details.
+bot.action(/^show_sinfi_details_(.*)_(.*)_(.*)/, (ctx) => {
+  // Get previous status (fiber/FWA), city id and zip name from callback match.
+  const [prevStatus, cityId, zipName] = ctx.match.slice(1);
+
+  return showSinfiDetails(prevStatus, cityId, zipName)
+    .catch((_) => {})
+    .finally(() => ctx.answerCbQuery().catch((_) => {}));
+});
+
 // If env is production, start webhook (Nginx as rev proxy).
 // Otherwise just poll.
 if (process.env.NODE_ENV === "production") {
   bot.telegram.setWebhook(`${process.env.DOMAIN_URL}/${process.env.BOT_TOKEN}`);
-
   bot.startWebhook(`/${process.env.BOT_TOKEN}`, null, process.env.HOOK_PORT);
 } else {
   bot.launch();

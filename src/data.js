@@ -1,6 +1,7 @@
 import moment from "moment";
 import memoize from "memoizee";
 import { bulApi, ofApi } from "./api.js";
+import { getSinfiZipPath } from "./sinfi.js";
 
 // Ugly but it works.
 const getLevel = (id) => (parseInt(id) > 21 ? "city" : "region");
@@ -40,6 +41,7 @@ const memoOpts = { promise: true, maxAge: 21600 * 1000 };
 // Memoize fetch functions, caching data for 6 hours.
 const memoData = memoize(fetchAPIData, memoOpts);
 const memoLastUpdate = memoize(fetchLastUpdate, memoOpts);
+const memoSinfiZipPath = memoize(getSinfiZipPath, memoOpts);
 
 const formatDate = (date) =>
   !!date ? moment(date).format("DD/MM/YYYY") : "non disponibile";
@@ -267,19 +269,27 @@ const buildData = async (type, id) => {
   // Last work status update date.
   const lastDate = lastUpdate.work_status.date;
 
-  let msg = "";
+  // Object containing message and possibly SINFI URL
+  let data = { message: "", sinfiUrl: null };
 
   if (level === "city") {
+    // Only get SINFI details for city.
+    data.sinfiZipPath = await memoSinfiZipPath(
+      apiData.region_name,
+      apiData.city_name,
+    );
+
     if (type === "fiber") {
-      msg = buildCityFiberData(apiData);
+      data.message = buildCityFiberData(apiData);
     } else {
-      msg = buildCityFWAData(apiData);
+      data.message = buildCityFWAData(apiData);
     }
+    // If region, no SINFI data is available, just set message prop.
   } else {
     if (type === "fiber") {
-      msg = buildRegionFiberData(apiData);
+      data.message = buildRegionFiberData(apiData);
     } else {
-      msg = buildRegionFWAData(apiData);
+      data.message = buildRegionFWAData(apiData);
     }
   }
 
@@ -287,11 +297,11 @@ const buildData = async (type, id) => {
   const lastTime = `${moment(lastDate).format("HH:mm")}`;
   const lastDay = `${moment(lastDate).format("DD/MM/YYYY")}`;
 
-  msg += `
+  data.message += `
 
 <i>Ultimo aggiornamento alle ${lastTime} del ${lastDay}</i>`;
 
-  return msg;
+  return data;
 };
 
 // Build fiber data based on id.
