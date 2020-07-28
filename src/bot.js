@@ -68,7 +68,7 @@ bot.action(/^show_fwa_details_\d+/, (ctx) => {
     .finally(() => ctx.answerCbQuery().catch((_) => {}));
 });
 
-// If env is produnction, start webhook (Nginx as rev proxy).
+// If env is production, start webhook (Nginx as rev proxy).
 // Otherwise just poll.
 if (process.env.NODE_ENV === "production") {
   bot.telegram.setWebhook(`${process.env.DOMAIN_URL}/${process.env.BOT_TOKEN}`);
