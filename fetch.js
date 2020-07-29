@@ -2,6 +2,7 @@ import fs from "fs";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 import { bulApi } from "./src/api.js";
+import { sinfiReq } from "./src/sinfi.js";
 
 // Get current file path.
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -19,10 +20,9 @@ if (!fs.existsSync(JSON_PATH)) {
     // Fetch region IDs.
     let { data: regions } = await bulApi("/regions");
 
-    // Fix some stupid API shit.
     regions = regions.map((r) => ({
       id: r.region_id,
-      name: r.region_id === 21 ? "Trentino Alto Adige - Trento" : r.region_name,
+      name: r.region_id === 21 ? "Trentino Alto Adige-Trento" : r.region_name,
     }));
 
     // Write regions to JSON.
@@ -58,6 +58,39 @@ if (!fs.existsSync(JSON_PATH)) {
     );
 
     console.log("Successfully wrote cities to file!");
+
+    // SINFI
+    const { data: body } = await sinfiReq(
+      "/index.php/35-esecutivi_bul_concessione",
+    );
+
+    const regionTags = body.match(/^<area alt=.*\/>/gm);
+
+    // Initialize map with regions.
+    let sinfiRegions = {};
+
+    for (let tag of regionTags) {
+      let [name, url] = tag.match(/title="(.*)".*href="(.*?(?="))/).slice(1);
+
+      name =
+        name === "Trentino-Alto Adige"
+          ? "Trentino Alto Adige-Trento"
+          : name.replace("-", " ");
+
+      // Without base URL.
+      url = url.slice(url.indexOf("/index.php"));
+
+      sinfiRegions[name] = url;
+    }
+
+    // Write SINFI regions to JSON.
+    fs.writeFileSync(
+      `${JSON_PATH}/sinfi_regions.json`,
+      JSON.stringify(sinfiRegions, null, 2),
+      { flag: "w" },
+    );
+
+    console.log("Successfully wrote SINFI regions to file!");
   } catch (e) {
     console.error(e.message);
   }
