@@ -74,7 +74,7 @@ bot.action(/^show_sinfi_details_(.*)_(.*)_(.*)/, (ctx) => {
   // Get previous status (fiber/FWA), city id and zip name from callback match.
   const [prevStatus, cityId, zipName] = ctx.match.slice(1);
 
-  return showSinfiDetails(prevStatus, cityId, zipName)
+  return showSinfiDetails(prevStatus, cityId, zipName, ctx)
     .catch((_) => {})
     .finally(() => ctx.answerCbQuery().catch((_) => {}));
 });

@@ -1,7 +1,7 @@
 import moment from "moment";
 import memoize from "memoizee";
 import { bulApi, ofApi } from "./api.js";
-import { getSinfiZipPath } from "./sinfi.js";
+import { getSinfiZipName } from "./sinfi.js";
 
 // Ugly but it works.
 const getLevel = (id) => (parseInt(id) > 21 ? "city" : "region");
@@ -41,7 +41,7 @@ const memoOpts = { promise: true, maxAge: 21600 * 1000 };
 // Memoize fetch functions, caching data for 6 hours.
 const memoData = memoize(fetchAPIData, memoOpts);
 const memoLastUpdate = memoize(fetchLastUpdate, memoOpts);
-const memoSinfiZipPath = memoize(getSinfiZipPath, memoOpts);
+const memoSinfiZipName = memoize(getSinfiZipName, memoOpts);
 
 const formatDate = (date) =>
   !!date ? moment(date).format("DD/MM/YYYY") : "non disponibile";
@@ -269,12 +269,12 @@ const buildData = async (type, id) => {
   // Last work status update date.
   const lastDate = lastUpdate.work_status.date;
 
-  // Object containing message and possibly SINFI URL
-  let data = { message: "", sinfiUrl: null };
+  // Object containing message and possibly SINFI ZIP path.
+  let data = { message: "", sinfiZipName: null };
 
   if (level === "city") {
     // Only get SINFI details for city.
-    data.sinfiZipPath = await memoSinfiZipPath(
+    data.sinfiZipName = await memoSinfiZipName(
       apiData.region_name,
       apiData.city_name,
     );
