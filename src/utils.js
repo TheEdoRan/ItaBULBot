@@ -185,7 +185,6 @@ Vedrai quindi comparire le varie tratte di fibra ottica.`;
       reply_markup: Markup.inlineKeyboard(buttons),
     });
   } catch (error) {
-    console.log(error);
     return ctx.editMessageText(
       "😕  <i>Errore nell'eseguire l'operazione.</i>",
       msgExtra,
