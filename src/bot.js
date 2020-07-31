@@ -2,6 +2,8 @@ import {} from "dotenv/config.js";
 import TG from "telegraf";
 const { Telegraf } = TG;
 
+import logger from "./logger.js";
+
 import {
   showHelp,
   buildResults,
@@ -12,6 +14,9 @@ import {
 } from "./utils.js";
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
+
+// Log to console.
+bot.use(logger);
 
 bot.telegram
   .getMe()
