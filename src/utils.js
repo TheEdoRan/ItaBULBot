@@ -173,7 +173,7 @@ Vedrai quindi comparire le varie tratte di fibra ottica.`;
       ],
       [
         Markup.callbackButton(
-          "◀️ Torna indietro",
+          "◀️  Torna indietro",
           `show_${prevStatus}_details_${cityId}`,
         ),
       ],
