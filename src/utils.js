@@ -189,7 +189,6 @@ Puoi trovare tutte le informazioni al riguardo su <a href="https://fibra.click/r
       reply_markup: Markup.inlineKeyboard(buttons),
     });
   } catch (error) {
-    console.log(error);
     return ctx.editMessageText(
       "😕  <i>Errore nell'eseguire l'operazione.</i>",
       msgExtra,
