@@ -3,11 +3,9 @@ import memoize from "memoizee";
 import { bulApi, ofApi } from "./api.js";
 import { getSinfiZipName } from "./sinfi.js";
 
-// Ugly but it works.
-const getLevel = (id) => (parseInt(id) > 21 ? "city" : "region");
-
-// Get last update time from API.
-const fetchLastUpdate = async () => (await bulApi(`/latest-import`)).data;
+/***************
+      FETCH
+****************/
 
 // Get data from API.
 const fetchAPIData = async (level, id) => {
@@ -34,6 +32,16 @@ const fetchAPIData = async (level, id) => {
 
   return data;
 };
+
+/***************
+      UTILS
+****************/
+
+// Ugly but it works.
+const getLevel = (id) => (parseInt(id) > 21 ? "city" : "region");
+
+// Get last update time from API.
+const fetchLastUpdate = async () => (await bulApi(`/latest-import`)).data;
 
 // Options for memoization.
 const memoOpts = { promise: true, maxAge: 21600 * 1000 };
@@ -116,19 +124,6 @@ Previsioni:
   Avvio lavori: ${formatDate(dates.data_prevista_avvio_lavori)}
   Chiusura lavori: ${formatDate(dates.data_prevista_chiusura_lavori)}
   Operatività: ${formatDate(dates.data_prevista_operativita)}`;
-
-  // Only if city has PCN data.
-  if (data.pcn) {
-    msg += `
-
-Informazioni PCN:
-  Sede: ${data.pcn.sede_name}
-  Route: ${data.pcn.pcn_route}
-  Stato lavori: ${data.pcn.work_status}
-  Direttrice: ${data.pcn.direttrice}
-  Ordine direttrice: ${data.pcn.ordine_direttrice}
-  Cab transitorio: ${data.pcn.cab_transitorio ? "sì" : "no"}`;
-  }
 
   return msg;
 };
@@ -260,17 +255,32 @@ ${getRegionWorkStatuses(grantFWAStatus)}`;
   return msg;
 };
 
-// Build fiber or FWA data, for city or region.
-const buildData = async (type, id) => {
-  const level = getLevel(id);
+/***************
+     GENERIC
+****************/
+
+const getLastUpdateStatus = async () => {
   const lastUpdate = await memoLastUpdate();
-  const apiData = await memoData(level, id);
+  // Format last time and day.
 
   // Last work status update date.
   const lastDate = lastUpdate.work_status.date;
 
-  // Object containing message and possibly SINFI ZIP path.
-  let data = { message: "", sinfiZipName: null };
+  // Format date.
+  const lastTime = `${moment(lastDate).format("HH:mm")}`;
+  const lastDay = `${moment(lastDate).format("DD/MM/YYYY")}`;
+
+  return `\n\n<i>Ultimo aggiornamento alle ${lastTime} del ${lastDay}</i>`;
+};
+
+// Build fiber or FWA data, for city or region.
+const buildData = async (type, id) => {
+  const level = getLevel(id);
+  const apiData = await memoData(level, id);
+
+  // Object containing message, possibly SINFI ZIP path and if city has or
+  // not PCN infos.
+  let data = { message: "", sinfiZipName: null, pcn: false };
 
   if (level === "city") {
     // Only get SINFI details for city.
@@ -278,6 +288,9 @@ const buildData = async (type, id) => {
       apiData.region_name,
       apiData.city_name,
     );
+
+    // Only if city has PCN infos.
+    data.pcn = !!apiData.pcn;
 
     if (type === "fiber") {
       data.message = buildCityFiberData(apiData);
@@ -293,19 +306,36 @@ const buildData = async (type, id) => {
     }
   }
 
-  // Format last time and day.
-  const lastTime = `${moment(lastDate).format("HH:mm")}`;
-  const lastDay = `${moment(lastDate).format("DD/MM/YYYY")}`;
-
-  data.message += `
-
-<i>Ultimo aggiornamento alle ${lastTime} del ${lastDay}</i>`;
+  data.message += await getLastUpdateStatus();
 
   return data;
 };
+
+/***************
+     EXPORTS
+****************/
 
 // Build fiber data based on id.
 export const buildFiberData = (id) => buildData("fiber", id);
 
 // Build FWA data based on id.
 export const buildFWAData = (id) => buildData("fwa", id);
+
+// Build PCN data based on city id.
+export const buildCityPCNData = async (cityId) => {
+  const data = await memoData("city", cityId);
+
+  let msg = `
+
+Informazioni PCN per <b>${data.city_name}</b>:
+  Sede: <b>${data.pcn.sede_name}</b>
+  Route: ${data.pcn.pcn_route}
+  Stato lavori: <b>${data.pcn.work_status}</b>
+  Direttrice: ${data.pcn.direttrice}
+  Ordine direttrice: ${data.pcn.ordine_direttrice}
+  Cab transitorio: ${data.pcn.cab_transitorio ? "sì" : "no"}`;
+
+  msg += await getLastUpdateStatus();
+
+  return msg;
+};

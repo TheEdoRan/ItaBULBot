@@ -2,7 +2,7 @@ import Markup from "telegraf/markup.js";
 import escape from "html-escape";
 
 import { cities, regions } from "./init.js";
-import { buildFiberData, buildFWAData } from "./data.js";
+import { buildFiberData, buildFWAData, buildCityPCNData } from "./data.js";
 import { getSinfiZipUrl } from "./sinfi.js";
 
 const substring = (s1, s2) => s1.toLowerCase().includes(s2.toLowerCase());
@@ -84,18 +84,30 @@ export const showFiberData = async (id, ctx) => {
     : null;
 
   try {
-    const { message, sinfiZipName } = await buildFiberData(id);
+    const { message, sinfiZipName, pcn } = await buildFiberData(id);
 
-    let buttons = [Markup.callbackButton("📡  FWA", `show_fwa_details_${id}`)];
+    let buttons = [
+      [Markup.callbackButton("📡  Dettagli FWA", `show_fwa_details_${id}`)],
+    ];
+
+    // Only display PCN details if present for city.
+    if (pcn) {
+      buttons[0].push(
+        Markup.callbackButton(
+          "🗄  Dettagli PCN",
+          `show_pcn_details_fiber_${id}`,
+        ),
+      );
+    }
 
     // Only display SINFI details if URL for this city exists.
     if (sinfiZipName) {
-      buttons.push(
+      buttons.push([
         Markup.callbackButton(
-          "🗺   SINFI",
+          "🗺  Informazioni SINFI",
           `show_sinfi_details_fiber_${id}_${sinfiZipName}`,
         ),
-      );
+      ]);
     }
 
     // Check if we should cancel the operation (user pressed on cancel button).
@@ -119,20 +131,27 @@ export const showFiberData = async (id, ctx) => {
 
 export const showFWAData = async (id, ctx) => {
   try {
-    const { message, sinfiZipName } = await buildFWAData(id);
+    const { message, sinfiZipName, pcn } = await buildFWAData(id);
 
     let buttons = [
-      Markup.callbackButton("🌐  Fibra ottica", `show_fiber_details_${id}`),
+      [Markup.callbackButton("🌐  Dettagli fibra", `show_fiber_details_${id}`)],
     ];
+
+    // Only display PCN details if present for city.
+    if (pcn) {
+      buttons[0].push(
+        Markup.callbackButton("🗄  Dettagli PCN", `show_pcn_details_fwa_${id}`),
+      );
+    }
 
     // Only display SINFI details if URL for this city exists.
     if (sinfiZipName) {
-      buttons.push(
+      buttons.push([
         Markup.callbackButton(
-          "🗺   SINFI",
+          "🗺  Informazioni SINFI",
           `show_sinfi_details_fwa_${id}_${sinfiZipName}`,
         ),
-      );
+      ]);
     }
 
     // Update message with data.
@@ -148,11 +167,42 @@ export const showFWAData = async (id, ctx) => {
   }
 };
 
+export const showCityPCNData = async (prevStatus, cityId, ctx) => {
+  try {
+    let message = `
+<b>Cos'è il PCN ❓</b>
+I <i>Punti di Consegna Neutri</i> (<b>PCN</b>), sono le <b>centrali</b> a cui fanno capo le fibre ottiche che collegano gli altri elementi della rete per una determinata zona (antenne <b>FWA</b> incluse). Un <b>PCN</b> tipicamente copre più comuni, per un totale di qualche decina di migliaia di unità immobiliari connesse.
+Puoi trovare tutte le informazioni al riguardo su <a href="https://fibra.click/riconoscere-rete-bul/#pcn-centrali">fibra.click</a>.`;
+
+    message += await buildCityPCNData(cityId);
+
+    let buttons = [
+      Markup.callbackButton(
+        "◀️  Torna indietro",
+        `show_${prevStatus}_details_${cityId}`,
+      ),
+    ];
+
+    // Update message with data.
+    return ctx.editMessageText(message, {
+      ...msgExtra,
+      reply_markup: Markup.inlineKeyboard(buttons),
+    });
+  } catch (error) {
+    console.log(error);
+    return ctx.editMessageText(
+      "😕  <i>Errore nell'eseguire l'operazione.</i>",
+      msgExtra,
+    );
+  }
+};
+
 export const showSinfiDetails = (prevStatus, cityId, zipName, ctx) => {
   try {
     const message = `
 <b>Cos'è il SINFI ❓</b>
-Il catasto nazionale delle infrastrutture (<b>SINFI</b>), mette a disposizione da ottobre 2019 i tracciati della <b>fibra ottica</b> posizionata nell'ambito del piano nazionale <b>BUL</b>. Puoi trovare tutte le informazioni al riguardo su <a href="https://fibra.click/bul-sinfi/">fibra.click</a>.
+Il <i>Catasto Nazionale delle Infrastrutture</i> (<b>SINFI</b>), mette a disposizione da ottobre 2019 i tracciati della <b>fibra ottica</b> posizionata nell'ambito del piano nazionale <b>BUL</b>.
+Puoi trovare tutte le informazioni al riguardo su <a href="https://fibra.click/bul-sinfi/">fibra.click</a>.
 
 <b>Archivio ZIP  📚</b>
 Se hai raggiunto questa pagina, significa che è disponibile un archivio con le tratte di fibra ottica per il paese o la città che hai scelto di cercare.

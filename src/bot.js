@@ -11,6 +11,7 @@ import {
   showFWAData,
   showSinfiDetails,
   cancelRequests,
+  showCityPCNData,
 } from "./utils.js";
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
@@ -55,9 +56,8 @@ bot.action("cancel_loading", (ctx) => {
 });
 
 // Show fiber details.
-bot.action(/^show_fiber_details_\d+/, (ctx) => {
-  const { data } = ctx.callbackQuery;
-  const id = data.slice(data.lastIndexOf("_") + 1);
+bot.action(/^show_fiber_details_(\d+)/, (ctx) => {
+  const [id] = ctx.match.slice(1);
 
   return showFiberData(id, ctx)
     .catch((_) => {})
@@ -65,11 +65,19 @@ bot.action(/^show_fiber_details_\d+/, (ctx) => {
 });
 
 // Show FWA details.
-bot.action(/^show_fwa_details_\d+/, (ctx) => {
-  const { data } = ctx.callbackQuery;
-  const id = data.slice(data.lastIndexOf("_") + 1);
+bot.action(/^show_fwa_details_(\d+)/, (ctx) => {
+  const [id] = ctx.match.slice(1);
 
   return showFWAData(id, ctx)
+    .catch((_) => {})
+    .finally(() => ctx.answerCbQuery().catch((_) => {}));
+});
+
+// Show PCN details.
+bot.action(/^show_pcn_details_(.*)_(\d+)/, (ctx) => {
+  const [prevStatus, cityId] = ctx.match.slice(1);
+
+  return showCityPCNData(prevStatus, cityId, ctx)
     .catch((_) => {})
     .finally(() => ctx.answerCbQuery().catch((_) => {}));
 });
