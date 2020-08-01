@@ -52,7 +52,9 @@ const memoLastUpdate = memoize(fetchLastUpdate, memoOpts);
 const memoSinfiZipName = memoize(getSinfiZipName, memoOpts);
 
 const formatDate = (date) =>
-  !!date ? moment(date).format("DD/MM/YYYY") : "non disponibile";
+  !!date
+    ? `<b>${moment(date).format("DD/MM/YYYY")}</b>`
+    : "<i>non disponibile</i>";
 
 /***************
       CITY
@@ -63,10 +65,6 @@ const getCityBaseData = (data) => {
   let msg = `
 <b>${data.city_name}</b>
 
-Provincia: ${data.province_name}
-Regione: ${data.region_name}
-
-Popolazione: ${data.people_data.people}
 Unità immobiliari totali: ${data.people_data.houses}`;
 
   // Only if city has OpenFiber data.
@@ -95,8 +93,7 @@ Importo OdE: ${
     of.importo_ode_ftth ? of.importo_ode_ftth.trim() + "€" : "non disponibile"
   }
 Impresa esecutrice: ${of.impresa_esecutrice_ftth || "non disponibile"}
-Fornitore DL/CSE: ${of.fornitore_dl_cse_ftth || "non disponibile"}
-`;
+Fornitore DL/CSE: ${of.fornitore_dl_cse_ftth || "non disponibile"}`;
 };
 
 // Build fiber data.
@@ -116,9 +113,10 @@ const buildCityFiberData = (data) => {
   msg += `
 
 <b>Fibra ottica</b>
-${getCityOfFiberData(data.of)}
+
 Stato lavori: <b>${progress.status || "non disponibile"}</b>
 Tipo di intervento: ${data.intervento.fiber || "non disponibile"}
+${getCityOfFiberData(data.of)}
 
 Previsioni:
   Avvio lavori: ${formatDate(dates.data_prevista_avvio_lavori)}
@@ -140,8 +138,7 @@ Importo OdE: ${
     of.importo_ode_fwa ? of.importo_ode_fwa.trim() + "€" : "non disponibile"
   }
 Impresa esecutrice: ${of.impresa_esecutrice_fwa || "non disponibile"}
-Fornitore DL/CSE: ${of.fornitore_dl_cse_fwa || "non disponibile"}
-`;
+Fornitore DL/CSE: ${of.fornitore_dl_cse_fwa || "non disponibile"}`;
 };
 
 // Build FWA data.
@@ -161,14 +158,15 @@ const buildCityFWAData = (data) => {
   msg += `
 
 <b>FWA</b>
-${getCityOfFWAData(data.of)}
+
 Stato lavori: <b>${progress.status || "non disponibile"}</b>
 Tipo di intervento: ${data.intervento.wireless || "non disponibile"}
+${getCityOfFWAData(data.of)}
 
 Previsioni:
   Avvio lavori: ${formatDate(dates.data_prevista_avvio_lavori)}
   Chiusura lavori: ${formatDate(dates.data_prevista_chiusura_lavori)}
-  Operatività: ${formatDate(dates.data_prevista_operativita)}`;
+  Operatività: <b>${formatDate(dates.data_prevista_operativita)}</b>`;
 
   return msg;
 };
@@ -186,7 +184,6 @@ const getRegionBaseData = (data) => {
   return `
 <b>${data.region_name}</b>
 
-Popolazione: ${peopleData.people}
 Unità immobiliari totali: ${peopleData.houses}
 Città: ${peopleData.cities}
 
@@ -327,7 +324,7 @@ export const buildCityPCNData = async (cityId) => {
 
   let msg = `
 
-Informazioni PCN per <b>${data.city_name}</b>:
+Informazioni <b>PCN</b> per <b>${data.city_name}</b>:
   Sede: <b>${data.pcn.sede_name}</b>
   Route: ${data.pcn.pcn_route}
   Stato lavori: <b>${data.pcn.work_status}</b>
