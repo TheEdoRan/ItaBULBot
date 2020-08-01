@@ -16,8 +16,11 @@ import {
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
-// Log to console.
-bot.use(logger);
+// Only log when debugging.
+if (process.env.DEBUG) {
+  // Log to console.
+  bot.use(logger);
+}
 
 bot.telegram
   .getMe()
