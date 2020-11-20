@@ -42,6 +42,11 @@ export const buildResults = (query) =>
     .sort((a, b) => a.title.length - b.title.length)
     .slice(0, 50);
 
+const showOpError = (ctx) =>
+  ctx
+    .editMessageText("😕  <i>Errore nell'eseguire l'operazione.</i>", msgExtra)
+    .catch(() => {});
+
 // For /start and /aiuto.
 export const showHelp = async ({ from, reply }) => {
   const msg = `
@@ -122,10 +127,7 @@ export const showFiberData = async (id, ctx) => {
       reply_markup: Markup.inlineKeyboard(buttons),
     });
   } catch (error) {
-    return ctx.editMessageText(
-      "😕  <i>Errore nell'eseguire l'operazione.</i>",
-      msgExtra,
-    );
+    return showOpError(ctx);
   }
 };
 
@@ -160,10 +162,7 @@ export const showFWAData = async (id, ctx) => {
       reply_markup: Markup.inlineKeyboard(buttons),
     });
   } catch (error) {
-    return ctx.editMessageText(
-      "😕  <i>Errore nell'eseguire l'operazione.</i>",
-      msgExtra,
-    );
+    return showOpError(ctx);
   }
 };
 
@@ -189,10 +188,7 @@ Puoi trovare tutte le informazioni al riguardo su <a href="https://fibra.click/r
       reply_markup: Markup.inlineKeyboard(buttons),
     });
   } catch (error) {
-    return ctx.editMessageText(
-      "😕  <i>Errore nell'eseguire l'operazione.</i>",
-      msgExtra,
-    );
+    return showOpError(ctx);
   }
 };
 
@@ -234,9 +230,6 @@ Vedrai quindi comparire le varie tratte di fibra ottica.`;
       reply_markup: Markup.inlineKeyboard(buttons),
     });
   } catch (error) {
-    return ctx.editMessageText(
-      "😕  <i>Errore nell'eseguire l'operazione.</i>",
-      msgExtra,
-    );
+    return showOpError(ctx);
   }
 };

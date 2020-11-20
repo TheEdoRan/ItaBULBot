@@ -7,7 +7,7 @@ import axios from "axios";
 const ofSecret = "6Yk9SPasgejjkapLJ5EkZwBhxFY8eLGLbBaqkfY8ymtFsaJr";
 
 const ofTimestamp = () => {
-  var date = new Date();
+  const date = new Date();
   return (
     date.setMinutes(10 * Math.floor(date.getMinutes() / 10)),
     date.setSeconds(0, 0),
