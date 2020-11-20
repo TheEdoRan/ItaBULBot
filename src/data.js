@@ -261,7 +261,7 @@ const getLastUpdateStatus = async () => {
   // Format last time and day.
 
   // Last work status update date.
-  const lastDate = lastUpdate.work_status.date;
+  const lastDate = lastUpdate.ws.date;
 
   // Format date.
   const lastTime = `${moment(lastDate).format("HH:mm")}`;
