@@ -93,6 +93,12 @@ export const showFiberData = async (id, ctx) => {
 
     let buttons = [
       [Markup.callbackButton("📡  Dettagli FWA", `show_fwa_details_${id}`)],
+      [
+        Markup.urlButton(
+          "🔗  Visualizza sul sito BUL",
+          `https://bandaultralarga.italia.it/mappa/?entity=${id}`,
+        ),
+      ],
     ];
 
     // Only display PCN details if present for city.
@@ -137,6 +143,12 @@ export const showFWAData = async (id, ctx) => {
 
     let buttons = [
       [Markup.callbackButton("🌐  Dettagli fibra", `show_fiber_details_${id}`)],
+      [
+        Markup.urlButton(
+          "🔗  Visualizza sul sito BUL",
+          `https://bandaultralarga.italia.it/mappa/?entity=${id}`,
+        ),
+      ],
     ];
 
     // Only display PCN details if present for city.
@@ -176,10 +188,18 @@ Puoi trovare tutte le informazioni al riguardo su <a href="https://fibra.click/r
     message += await buildCityPCNData(cityId);
 
     let buttons = [
-      Markup.callbackButton(
-        "◀️  Torna indietro",
-        `show_${prevStatus}_details_${cityId}`,
-      ),
+      [
+        Markup.urlButton(
+          "🔗  Visualizza sul sito BUL",
+          `https://bandaultralarga.italia.it/mappa/?entity=${cityId}&pcn=1`,
+        ),
+      ],
+      [
+        Markup.callbackButton(
+          "◀️  Torna indietro",
+          `show_${prevStatus}_details_${cityId}`,
+        ),
+      ],
     ];
 
     // Update message with data.

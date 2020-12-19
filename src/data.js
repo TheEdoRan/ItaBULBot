@@ -294,6 +294,7 @@ const buildData = async (type, id) => {
     } else {
       data.message = buildCityFWAData(apiData);
     }
+
     // If region, no SINFI data is available, just set message prop.
   } else {
     if (type === "fiber") {
