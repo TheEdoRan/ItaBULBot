@@ -96,7 +96,7 @@ export const showFiberData = async (id, ctx) => {
       [
         Markup.urlButton(
           "🔗  Visualizza sul sito BUL",
-          `https://bandaultralarga.italia.it/mappa/?entity=${id}`,
+          `https://bandaultralarga.italia.it/mappa/?entity=${id}&indicator=fiber`,
         ),
       ],
     ];
@@ -146,7 +146,7 @@ export const showFWAData = async (id, ctx) => {
       [
         Markup.urlButton(
           "🔗  Visualizza sul sito BUL",
-          `https://bandaultralarga.italia.it/mappa/?entity=${id}`,
+          `https://bandaultralarga.italia.it/mappa/?entity=${id}&indicator=wireless`,
         ),
       ],
     ];
