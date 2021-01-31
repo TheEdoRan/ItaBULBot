@@ -95,15 +95,5 @@ bot.action(/^show_sinfi_details_(.*)_(.*)_(.*)/, (ctx) => {
     .finally(() => ctx.answerCbQuery().catch((_) => {}));
 });
 
-// If env is production, start webhook (Nginx as rev proxy).
-// Otherwise just poll.
-if (process.env.NODE_ENV === "production") {
-  bot.launch({
-    webhook: {
-      domain: `${process.env.DOMAIN_URL}/${process.env.BOT_TOKEN}`,
-      port: process.env.HOOK_PORT,
-    },
-  });
-} else {
-  bot.launch();
-}
+// Launch bot
+bot.launch();
