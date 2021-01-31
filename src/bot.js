@@ -1,6 +1,5 @@
 import {} from "dotenv/config.js";
-import TG from "telegraf";
-const { Telegraf } = TG;
+import { Telegraf } from "telegraf";
 
 import logger from "./logger.js";
 
@@ -33,9 +32,10 @@ bot.command(["start", "aiuto"], (ctx) => {
 });
 
 // Display cities/regions in inline query.
-bot.on("inline_query", ({ inlineQuery, answerInlineQuery }) => {
-  const results = buildResults(inlineQuery.query);
-  return answerInlineQuery(results).catch((_) => {});
+bot.on("inline_query", (ctx) => {
+  const results = buildResults(ctx.inlineQuery.query);
+
+  return ctx.answerInlineQuery(results).catch((_) => {});
 });
 
 // User chose city or region.
@@ -98,8 +98,12 @@ bot.action(/^show_sinfi_details_(.*)_(.*)_(.*)/, (ctx) => {
 // If env is production, start webhook (Nginx as rev proxy).
 // Otherwise just poll.
 if (process.env.NODE_ENV === "production") {
-  bot.telegram.setWebhook(`${process.env.DOMAIN_URL}/${process.env.BOT_TOKEN}`);
-  bot.startWebhook(`/${process.env.BOT_TOKEN}`, null, process.env.HOOK_PORT);
+  bot.launch({
+    webhook: {
+      domain: `${process.env.DOMAIN_URL}/${process.env.BOT_TOKEN}`,
+      port: process.env.HOOK_PORT,
+    },
+  });
 } else {
   bot.launch();
 }

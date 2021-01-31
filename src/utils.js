@@ -1,4 +1,4 @@
-import Markup from "telegraf/markup.js";
+import { Markup } from "telegraf";
 import escape from "html-escape";
 
 import { cities, regions } from "./init.js";
@@ -23,8 +23,8 @@ const buildResult = (id, title, description) => ({
     message_text: "<i>Scaricando informazioni...</i>",
     ...msgExtra,
   },
-  reply_markup: Markup.inlineKeyboard([
-    Markup.callbackButton("❌  Cancella operazione", "cancel_loading"),
+  ...Markup.inlineKeyboard([
+    Markup.button.callback("❌  Cancella operazione", "cancel_loading"),
   ]),
 });
 
@@ -92,9 +92,9 @@ export const showFiberData = async (id, ctx) => {
     const { message, sinfiZipName, pcn } = await buildFiberData(id);
 
     let buttons = [
-      [Markup.callbackButton("📡  Dettagli FWA", `show_fwa_details_${id}`)],
+      [Markup.button.callback("📡  Dettagli FWA", `show_fwa_details_${id}`)],
       [
-        Markup.urlButton(
+        Markup.button.url(
           "🔗  Visualizza sul sito BUL",
           `https://bandaultralarga.italia.it/mappa/?entity=${id}&indicator=fiber`,
         ),
@@ -104,7 +104,7 @@ export const showFiberData = async (id, ctx) => {
     // Only display PCN details if present for city.
     if (pcn) {
       buttons[0].push(
-        Markup.callbackButton(
+        Markup.button.callback(
           "🗄  Dettagli PCN",
           `show_pcn_details_fiber_${id}`,
         ),
@@ -114,7 +114,7 @@ export const showFiberData = async (id, ctx) => {
     // Only display SINFI details if URL for this city exists.
     if (sinfiZipName) {
       buttons.push([
-        Markup.callbackButton(
+        Markup.button.callback(
           "🗺  Informazioni SINFI",
           `show_sinfi_details_fiber_${id}_${sinfiZipName}`,
         ),
@@ -130,7 +130,7 @@ export const showFiberData = async (id, ctx) => {
     // Update message with data.
     return ctx.editMessageText(message, {
       ...msgExtra,
-      reply_markup: Markup.inlineKeyboard(buttons),
+      ...Markup.inlineKeyboard(buttons),
     });
   } catch (error) {
     return showOpError(ctx);
@@ -142,9 +142,14 @@ export const showFWAData = async (id, ctx) => {
     const { message, sinfiZipName, pcn } = await buildFWAData(id);
 
     let buttons = [
-      [Markup.callbackButton("🌐  Dettagli fibra", `show_fiber_details_${id}`)],
       [
-        Markup.urlButton(
+        Markup.button.callback(
+          "🌐  Dettagli fibra",
+          `show_fiber_details_${id}`,
+        ),
+      ],
+      [
+        Markup.button.url(
           "🔗  Visualizza sul sito BUL",
           `https://bandaultralarga.italia.it/mappa/?entity=${id}&indicator=wireless`,
         ),
@@ -154,14 +159,14 @@ export const showFWAData = async (id, ctx) => {
     // Only display PCN details if present for city.
     if (pcn) {
       buttons[0].push(
-        Markup.callbackButton("🗄  Dettagli PCN", `show_pcn_details_fwa_${id}`),
+        Markup.button.callback("🗄  Dettagli PCN", `show_pcn_details_fwa_${id}`),
       );
     }
 
     // Only display SINFI details if URL for this city exists.
     if (sinfiZipName) {
       buttons.push([
-        Markup.callbackButton(
+        Markup.button.callback(
           "🗺  Informazioni SINFI",
           `show_sinfi_details_fwa_${id}_${sinfiZipName}`,
         ),
@@ -171,7 +176,7 @@ export const showFWAData = async (id, ctx) => {
     // Update message with data.
     return ctx.editMessageText(message, {
       ...msgExtra,
-      reply_markup: Markup.inlineKeyboard(buttons),
+      ...Markup.inlineKeyboard(buttons),
     });
   } catch (error) {
     return showOpError(ctx);
@@ -189,13 +194,13 @@ Puoi trovare tutte le informazioni al riguardo su <a href="https://fibra.click/r
 
     let buttons = [
       [
-        Markup.urlButton(
+        Markup.button.url(
           "🔗  Visualizza sul sito BUL",
           `https://bandaultralarga.italia.it/mappa/?entity=${cityId}&pcn=1`,
         ),
       ],
       [
-        Markup.callbackButton(
+        Markup.button.callback(
           "◀️  Torna indietro",
           `show_${prevStatus}_details_${cityId}`,
         ),
@@ -205,7 +210,7 @@ Puoi trovare tutte le informazioni al riguardo su <a href="https://fibra.click/r
     // Update message with data.
     return ctx.editMessageText(message, {
       ...msgExtra,
-      reply_markup: Markup.inlineKeyboard(buttons),
+      ...Markup.inlineKeyboard(buttons),
     });
   } catch (error) {
     return showOpError(ctx);
@@ -230,14 +235,14 @@ Vedrai quindi comparire le varie tratte di fibra ottica.`;
 
     const buttons = [
       [
-        Markup.urlButton("📚  Scarica ZIP", getSinfiZipUrl(zipName)),
-        Markup.urlButton(
+        Markup.button.url("📚  Scarica ZIP", getSinfiZipUrl(zipName)),
+        Markup.button.url(
           "👀  Visualizzatore",
           "https://fibra.click/bul-sinfi/mappa/",
         ),
       ],
       [
-        Markup.callbackButton(
+        Markup.button.callback(
           "◀️  Torna indietro",
           `show_${prevStatus}_details_${cityId}`,
         ),
@@ -247,7 +252,7 @@ Vedrai quindi comparire le varie tratte di fibra ottica.`;
     // Update message with SINFI details.
     return ctx.editMessageText(message, {
       ...msgExtra,
-      reply_markup: Markup.inlineKeyboard(buttons),
+      ...Markup.inlineKeyboard(buttons),
     });
   } catch (error) {
     return showOpError(ctx);
