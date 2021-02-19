@@ -341,7 +341,7 @@ export const buildCityPCNData = async (cityId) => {
   const data = await memoData("city", cityId);
 
   let msg = `
-Informazioni <b>PCN</b> per <b>${data.city_name}</b>:
+Informazioni <a href=\"https://fibra.click/riconoscere-rete-bul/#pcn-centrali\">PCN</a> per <b>${data.city_name}</b>:
   Sede: <b>${data.pcn.sede_name}</b>
   Route: ${data.pcn.pcn_route}
   Stato lavori: <b>${data.pcn.work_status}</b>
