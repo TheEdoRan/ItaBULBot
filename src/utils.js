@@ -2,7 +2,12 @@ import { Markup } from "telegraf";
 import escape from "html-escape";
 
 import { cities, regions } from "./init.js";
-import { buildFiberData, buildFWAData, buildCityPCNData } from "./data.js";
+import {
+  buildFiberData,
+  buildFWAData,
+  buildCityPCNData,
+  buildShelterMapUrl,
+} from "./data.js";
 import { getSinfiZipUrl } from "./sinfi.js";
 
 const substring = (s1, s2) => s1.toLowerCase().includes(s2.toLowerCase());
@@ -185,7 +190,7 @@ export const showFWAData = async (id, ctx) => {
 
 export const showCityPCNData = async (prevStatus, cityId, ctx) => {
   try {
-    let message = await buildCityPCNData(cityId);
+    let [message, sedeId] = await buildCityPCNData(cityId);
 
     message += `
 
@@ -200,13 +205,20 @@ Puoi trovare tutte le informazioni al riguardo su <a href="https://fibra.click/r
           `https://bandaultralarga.italia.it/mappa/?entity=${cityId}&pcn=1`,
         ),
       ],
-      [
-        Markup.button.callback(
-          "◀️  Torna indietro",
-          `show_${prevStatus}_details_${cityId}`,
-        ),
-      ],
     ];
+
+    const mapUrl = await buildShelterMapUrl(sedeId);
+
+    if (mapUrl) {
+      buttons.push([Markup.button.url("🗺 Visualizza sulla mappa", mapUrl)]);
+    }
+
+    buttons.push([
+      Markup.button.callback(
+        "◀️  Torna indietro",
+        `show_${prevStatus}_details_${cityId}`,
+      ),
+    ]);
 
     // Update message with data.
     return ctx.editMessageText(message, {

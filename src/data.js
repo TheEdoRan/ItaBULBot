@@ -33,6 +33,22 @@ const fetchAPIData = async (level, id) => {
   return data;
 };
 
+// Get shelter data from API.
+const fetchShelterData = async (cityId) => {
+  try {
+    let { data } = await bulApi(`/shelters?cities=${cityId}`);
+
+    const coords = data.features[0].geometry.coordinates;
+
+    return {
+      latitude: coords[1],
+      longitude: coords[0],
+    };
+  } catch (_) {
+    return null;
+  }
+};
+
 /***************
       UTILS
 ****************/
@@ -48,6 +64,7 @@ const memoOpts = { promise: true, maxAge: 21600 * 1000 };
 
 // Memoize fetch functions, caching data for 6 hours.
 const memoData = memoize(fetchAPIData, memoOpts);
+const memoShelterData = memoize(fetchShelterData, memoOpts);
 const memoLastUpdate = memoize(fetchLastUpdate, memoOpts);
 const memoSinfiZipName = memoize(getSinfiZipName, memoOpts);
 
@@ -329,13 +346,24 @@ Informazioni <b>PCN</b> per <b>${data.city_name}</b>:
   Route: ${data.pcn.pcn_route}
   Stato lavori: <b>${data.pcn.work_status}</b>
   Direttrice: ${data.pcn.direttrice}
-  Ordine direttrice: ${data.pcn.ordine_direttrice}
- ${
-   data.pcn.cab_transitorio &&
-   '\n⚠️ Il comune risulta al momento dotato di temporaneo <a href="https://fibra.click/riconoscere-rete-bul/#mini-pcn">mini PCN</a>.'
- }`;
+  Ordine direttrice: ${data.pcn.ordine_direttrice}`;
+
+  if (data.pcn.cab_transitorio) {
+    msg +=
+      '\n\n⚠️ Il comune risulta al momento dotato di temporaneo <a href="https://fibra.click/riconoscere-rete-bul/#mini-pcn">mini PCN</a>.';
+  }
 
   msg += await getLastUpdateStatus();
 
-  return msg;
+  return [msg, data.pcn.sede_id];
+};
+
+export const buildShelterMapUrl = async (cityId) => {
+  const coords = await memoShelterData(cityId);
+
+  if (!coords) {
+    return null;
+  }
+
+  return `https://www.google.com/maps/search/?api=1&query=${coords.latitude},${coords.longitude}`;
 };
