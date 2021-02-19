@@ -185,12 +185,13 @@ export const showFWAData = async (id, ctx) => {
 
 export const showCityPCNData = async (prevStatus, cityId, ctx) => {
   try {
-    let message = `
+    let message = await buildCityPCNData(cityId);
+
+    message += `
+
 <b>Cos'è il PCN ❓</b>
 I <i>Punti di Consegna Neutri</i> (<b>PCN</b>), sono le <b>centrali</b> a cui fanno capo le fibre ottiche che collegano gli altri elementi della rete per una determinata zona (antenne <b>FWA</b> incluse). Un <b>PCN</b> tipicamente copre più comuni, per un totale di qualche decina di migliaia di unità immobiliari connesse.
 Puoi trovare tutte le informazioni al riguardo su <a href="https://fibra.click/riconoscere-rete-bul/#pcn-centrali">fibra.click</a>.`;
-
-    message += await buildCityPCNData(cityId);
 
     let buttons = [
       [

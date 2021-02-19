@@ -324,14 +324,16 @@ export const buildCityPCNData = async (cityId) => {
   const data = await memoData("city", cityId);
 
   let msg = `
-
 Informazioni <b>PCN</b> per <b>${data.city_name}</b>:
   Sede: <b>${data.pcn.sede_name}</b>
   Route: ${data.pcn.pcn_route}
   Stato lavori: <b>${data.pcn.work_status}</b>
   Direttrice: ${data.pcn.direttrice}
   Ordine direttrice: ${data.pcn.ordine_direttrice}
-  Cab transitorio: ${data.pcn.cab_transitorio ? "sì" : "no"}`;
+ ${
+   data.pcn.cab_transitorio &&
+   '\n⚠️ Il comune risulta al momento dotato di temporaneo <a href="https://fibra.click/riconoscere-rete-bul/#mini-pcn">mini PCN</a>.'
+ }`;
 
   msg += await getLastUpdateStatus();
 
