@@ -190,7 +190,7 @@ export const showFWAData = async (id, ctx) => {
 
 export const showCityPCNData = async (prevStatus, cityId, ctx) => {
   try {
-    let [message, sedeId] = await buildCityPCNData(cityId);
+    const [message, sedeId] = await buildCityPCNData(cityId);
 
     let buttons = [
       [
@@ -204,7 +204,7 @@ export const showCityPCNData = async (prevStatus, cityId, ctx) => {
     const mapUrl = await buildShelterMapUrl(sedeId);
 
     if (mapUrl) {
-      buttons.push([Markup.button.url("🗺 Visualizza sulla mappa", mapUrl)]);
+      buttons.push([Markup.button.url("🗺  Localizza sulla mappa", mapUrl)]);
     }
 
     buttons.push([

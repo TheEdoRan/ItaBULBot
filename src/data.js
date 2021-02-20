@@ -350,7 +350,7 @@ Informazioni <a href=\"https://fibra.click/riconoscere-rete-bul/#pcn-centrali\">
 
   if (data.pcn.cab_transitorio) {
     msg +=
-      '\n\n⚠️ Il comune risulta al momento dotato di temporaneo <a href="https://fibra.click/riconoscere-rete-bul/#mini-pcn">mini PCN</a>.';
+      '\n\n⚠️ Il comune risulta al momento servito da temporaneo <a href="https://fibra.click/riconoscere-rete-bul/#mini-pcn">mini PCN</a>.';
   }
 
   msg += await getLastUpdateStatus();
