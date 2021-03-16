@@ -53,9 +53,9 @@ const showOpError = (ctx) =>
     .catch(() => {});
 
 // For /start and /aiuto.
-export const showHelp = async ({ from, reply }) => {
+export const showHelp = async (ctx) => {
   const msg = `
-Ciao <b>${escape(from.first_name)}</b> 👋!
+Ciao <b>${escape(ctx.from.first_name)}</b> 👋!
 
 Questo bot ti aiuterà a scoprire qual è lo stato dei lavori di fibra ottica/FWA, finanziati dal progetto <i>BandaUltraLarga</i> (<b>#BUL</b>) in una determinata regione o città, da te scelta.
 
@@ -83,7 +83,7 @@ Il codice sorgente e la relativa documentazione si possono trovare a <a href="ht
 Sono ben accetti feedback, per quanto riguarda segnalazioni di bug, proposte per miglioramenti o domande in generale sul funzionamento del bot stesso.
 Puoi contattarmi sia su <a href="https://github.com/theedoran/itabulbot">GitHub</a> aprendo una issue, oppure in privato qui su Telegram, a @TheEdoRan.`;
 
-  return reply(msg, msgExtra);
+  return ctx.reply(msg, msgExtra);
 };
 
 export const showFiberData = async (id, ctx) => {
