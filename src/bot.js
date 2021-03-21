@@ -77,7 +77,7 @@ bot.action(/^show_fwa_details_(\d+)/, (ctx) => {
 });
 
 // Show PCN details.
-bot.action(/^show_pcn_details_(.*)_(\d+)/, (ctx) => {
+bot.action(/^show_pcn_details_(.+)_(\d+)/, (ctx) => {
   const [prevStatus, cityId] = ctx.match.slice(1);
 
   return showCityPCNData(prevStatus, cityId, ctx)
@@ -86,14 +86,18 @@ bot.action(/^show_pcn_details_(.*)_(\d+)/, (ctx) => {
 });
 
 // Show SINFI details.
-bot.action(/^show_sinfi_details_(.*)_(.*)_(.*)/, (ctx) => {
+bot.action(/^show_sinfi_details_.+/, (ctx) => {
   // Get previous status (fiber/FWA), city id and zip name from callback match.
-  const [prevStatus, cityId, zipName] = ctx.match.slice(1);
+  const [prevStatus, cityId, ...zipName] = ctx.match[0].split("_").slice(3);
 
-  return showSinfiDetails(prevStatus, cityId, zipName, ctx)
+  return showSinfiDetails(prevStatus, cityId, zipName.join("_"), ctx)
     .catch((_) => {})
     .finally(() => ctx.answerCbQuery().catch((_) => {}));
 });
 
 // Launch bot
 bot.launch();
+
+// Enable graceful stop
+process.once("SIGINT", () => bot.stop("SIGINT"));
+process.once("SIGTERM", () => bot.stop("SIGTERM"));
