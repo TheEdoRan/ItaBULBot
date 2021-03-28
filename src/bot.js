@@ -8,7 +8,6 @@ import {
   buildResults,
   showFiberData,
   showFWAData,
-  showSinfiDetails,
   cancelRequests,
   showCityPCNData,
 } from "./utils.js";
@@ -81,16 +80,6 @@ bot.action(/^show_pcn_details_(.+)_(\d+)/, (ctx) => {
   const [prevStatus, cityId] = ctx.match.slice(1);
 
   return showCityPCNData(prevStatus, cityId, ctx)
-    .catch((_) => {})
-    .finally(() => ctx.answerCbQuery().catch((_) => {}));
-});
-
-// Show SINFI details.
-bot.action(/^show_sinfi_details_.+/, (ctx) => {
-  // Get previous status (fiber/FWA), city id and zip name from callback match.
-  const [prevStatus, cityId, ...zipName] = ctx.match[0].split("_").slice(3);
-
-  return showSinfiDetails(prevStatus, cityId, zipName.join("_"), ctx)
     .catch((_) => {})
     .finally(() => ctx.answerCbQuery().catch((_) => {}));
 });

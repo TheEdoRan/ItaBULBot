@@ -8,7 +8,6 @@ import {
   buildCityPCNData,
   buildShelterMapUrl,
 } from "./data.js";
-import { getSinfiZipUrl } from "./sinfi.js";
 
 const substring = (s1, s2) => s1.toLowerCase().includes(s2.toLowerCase());
 
@@ -94,7 +93,7 @@ export const showFiberData = async (id, ctx) => {
     : null;
 
   try {
-    const { message, sinfiZipName, pcn } = await buildFiberData(id);
+    const { message, pcn } = await buildFiberData(id);
 
     let buttons = [
       [Markup.button.callback("📡  Dettagli FWA", `show_fwa_details_${id}`)],
@@ -116,16 +115,6 @@ export const showFiberData = async (id, ctx) => {
       );
     }
 
-    // Only display SINFI details if URL for this city exists.
-    if (sinfiZipName) {
-      buttons.push([
-        Markup.button.callback(
-          "🗺  Informazioni SINFI",
-          `show_sinfi_details_fiber_${id}_${sinfiZipName}`,
-        ),
-      ]);
-    }
-
     // Check if we should cancel the operation (user pressed on cancel button).
     if (cancelRequests.has(msgId)) {
       cancelRequests.delete(msgId);
@@ -144,7 +133,7 @@ export const showFiberData = async (id, ctx) => {
 
 export const showFWAData = async (id, ctx) => {
   try {
-    const { message, sinfiZipName, pcn } = await buildFWAData(id);
+    const { message, pcn } = await buildFWAData(id);
 
     let buttons = [
       [
@@ -166,16 +155,6 @@ export const showFWAData = async (id, ctx) => {
       buttons[0].push(
         Markup.button.callback("🗄  Dettagli PCN", `show_pcn_details_fwa_${id}`),
       );
-    }
-
-    // Only display SINFI details if URL for this city exists.
-    if (sinfiZipName) {
-      buttons.push([
-        Markup.button.callback(
-          "🗺  Informazioni SINFI",
-          `show_sinfi_details_fwa_${id}_${sinfiZipName}`,
-        ),
-      ]);
     }
 
     // Update message with data.
@@ -215,48 +194,6 @@ export const showCityPCNData = async (prevStatus, cityId, ctx) => {
     ]);
 
     // Update message with data.
-    return ctx.editMessageText(message, {
-      ...msgExtra,
-      ...Markup.inlineKeyboard(buttons),
-    });
-  } catch (error) {
-    return showOpError(ctx);
-  }
-};
-
-export const showSinfiDetails = (prevStatus, cityId, zipName, ctx) => {
-  try {
-    const message = `
-<b>Cos'è il SINFI ❓</b>
-Il <i>Catasto Nazionale delle Infrastrutture</i> (<b>SINFI</b>), mette a disposizione da ottobre 2019 i tracciati della <b>fibra ottica</b> posizionata nell'ambito del piano nazionale <b>BUL</b>.
-Puoi trovare tutte le informazioni al riguardo su <a href="https://fibra.click/bul-sinfi/">fibra.click</a>.
-
-<b>Archivio ZIP  📚</b>
-Se hai raggiunto questa pagina, significa che è disponibile un archivio con le tratte di fibra ottica per il paese o la città che hai scelto di cercare.
-Ti basterà premere sul pulsante <code>Scarica ZIP</code> per avviare il download.
-
-<b>Visualizzatore  👀</b>
-<a href="https://fibra.click/">fibra.click</a> mette a disposizione anche il visualizzatore SINFI.
-Ti basterà premere sul relativo pulsante e, una volta aperto il sito, caricare lo ZIP che hai appena scaricato.
-Vedrai quindi comparire le varie tratte di fibra ottica.`;
-
-    const buttons = [
-      [
-        Markup.button.url("📚  Scarica ZIP", getSinfiZipUrl(zipName)),
-        Markup.button.url(
-          "👀  Visualizzatore",
-          "https://fibra.click/bul-sinfi/mappa/",
-        ),
-      ],
-      [
-        Markup.button.callback(
-          "◀️  Torna indietro",
-          `show_${prevStatus}_details_${cityId}`,
-        ),
-      ],
-    ];
-
-    // Update message with SINFI details.
     return ctx.editMessageText(message, {
       ...msgExtra,
       ...Markup.inlineKeyboard(buttons),

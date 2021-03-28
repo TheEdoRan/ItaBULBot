@@ -1,7 +1,6 @@
 import moment from "moment";
 import memoize from "memoizee";
 import { bulApi, ofApi } from "./api.js";
-import { getSinfiZipName } from "./sinfi.js";
 
 /***************
       FETCH
@@ -66,7 +65,6 @@ const memoOpts = { promise: true, maxAge: 21600 * 1000 };
 const memoData = memoize(fetchAPIData, memoOpts);
 const memoShelterData = memoize(fetchShelterData, memoOpts);
 const memoLastUpdate = memoize(fetchLastUpdate, memoOpts);
-const memoSinfiZipName = memoize(getSinfiZipName, memoOpts);
 
 const formatDate = (date) =>
   !!date
@@ -292,17 +290,10 @@ const buildData = async (type, id) => {
   const level = getLevel(id);
   const apiData = await memoData(level, id);
 
-  // Object containing message, possibly SINFI ZIP path and if city has or
-  // not PCN infos.
-  let data = { message: "", sinfiZipName: null, pcn: false };
+  // Object containing message, and optional PCN infos.
+  let data = { message: "", pcn: false };
 
   if (level === "city") {
-    // Only get SINFI details for city.
-    data.sinfiZipName = await memoSinfiZipName(
-      apiData.region_name,
-      apiData.city_name,
-    );
-
     // Only if city has PCN infos.
     data.pcn = !!apiData.pcn;
 
@@ -311,8 +302,6 @@ const buildData = async (type, id) => {
     } else {
       data.message = buildCityFWAData(apiData);
     }
-
-    // If region, no SINFI data is available, just set message prop.
   } else {
     if (type === "fiber") {
       data.message = buildRegionFiberData(apiData);
