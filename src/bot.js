@@ -1,7 +1,11 @@
 import {} from "dotenv/config.js";
 import { Telegraf } from "telegraf";
-
 import logger from "./logger.js";
+
+import {
+  getCityIdFromCityRegionNames,
+  getInlineAddressSearchButton,
+} from "./utils.js";
 
 import {
   showHelp,
@@ -12,6 +16,8 @@ import {
   showCityPCNData,
 } from "./utils.js";
 
+import { getAddressData, isUserSearching, setAddressData } from "./session.js";
+
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 // Only log when debugging.
@@ -20,21 +26,63 @@ if (process.env.DEBUG) {
   bot.use(logger);
 }
 
-bot.telegram
-  .getMe()
-  .then((info) => (bot.options.username = info.username))
-  .catch((_) => {});
+// Start/help command (works for private chat only).
+bot.command(
+  ["start", "aiuto"],
+  (ctx, next) => ctx.chat.type === "private" && next(),
+  (ctx) => {
+    const {
+      message: { text: cmd },
+    } = ctx;
 
-// Start/help command.
-bot.command(["start", "aiuto"], (ctx) => {
-  return showHelp(ctx).catch((_) => {});
-});
+    // City name and region name for address search, if present.
+    const addressSearch = cmd.match(/^\/start\saddress_search_(.+)_(.+)$/);
+
+    if (addressSearch) {
+      const [_, cityName, regionName] = addressSearch;
+      const cityId = getCityIdFromCityRegionNames(cityName, regionName);
+
+      // If no city id, stop the process here (query not valid).
+      if (!cityId) {
+        return;
+      }
+
+      // Otherwise, reply to user asking for an address.
+      ctx
+        .reply(
+          `Scrivi l'indirizzo che vuoi cercare per <b>${cityName}</b>, <i>${regionName}</i>:`,
+          { parse_mode: "HTML" },
+        )
+        .catch((_) => {});
+
+      // Put data into session.
+      setAddressData(ctx.from.id, cityId, cityName, regionName);
+
+      return;
+    }
+
+    return showHelp(ctx).catch((_) => {});
+  },
+);
+
+// Text handler, works for private chat only and if user is doing an address
+// search.
+bot.on(
+  "text",
+  (ctx, next) => ctx.chat.type === "private" && next(),
+  (ctx, next) => isUserSearching(ctx.from.id) && next(),
+  (ctx) => {
+    // TODO: handle request and delete user from map once done.
+  },
+);
 
 // Display cities/regions in inline query.
 bot.on("inline_query", (ctx) => {
   const results = buildResults(ctx.inlineQuery.query);
 
-  return ctx.answerInlineQuery(results).catch((_) => {});
+  return ctx
+    .answerInlineQuery(results, getInlineAddressSearchButton(results))
+    .catch((_) => {});
 });
 
 // User chose city or region.

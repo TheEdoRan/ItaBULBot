@@ -11,6 +11,8 @@ import {
 
 const substring = (s1, s2) => s1.toLowerCase().includes(s2.toLowerCase());
 
+export const getLevel = (id) => (parseInt(id) > 21 ? "city" : "region");
+
 // Extra Telegram options for message edit/send.
 const msgExtra = { parse_mode: "HTML", disable_web_page_preview: true };
 
@@ -45,6 +47,22 @@ export const buildResults = (query) =>
   ]
     .sort((a, b) => a.title.length - b.title.length)
     .slice(0, 50);
+
+// Determine if we have to display the "address search" button or not, depending
+// on the size of the results array (it has to be just 1 result) and if it's a
+// city or not (works only for cities, obviously).
+export const getInlineAddressSearchButton = (results) =>
+  results.length !== 1 || getLevel(results[0].id) === "region"
+    ? {}
+    : {
+        switch_pm_text: `Cerca un indirizzo per ${results[0].title}`,
+        switch_pm_parameter: `address_search_${results[0].name}_${results[0].region_name}`,
+      };
+
+// Check if address search city region names are valid.
+export const getCityIdFromCityRegionNames = (cityName, regionName) =>
+  cities.filter((c) => c.name === cityName && c.region_name === regionName)[0]
+    ?.id;
 
 const showOpError = (ctx) =>
   ctx

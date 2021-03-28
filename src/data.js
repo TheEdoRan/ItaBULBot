@@ -1,6 +1,7 @@
 import moment from "moment";
 import memoize from "memoizee";
 import { bulApi, ofApi } from "./api.js";
+import { getLevel } from "./utils.js";
 
 /***************
       FETCH
@@ -51,9 +52,6 @@ const fetchShelterData = async (cityId) => {
 /***************
       UTILS
 ****************/
-
-// Ugly but it works.
-const getLevel = (id) => (parseInt(id) > 21 ? "city" : "region");
 
 // Get last update time from API.
 const fetchLastUpdate = async () => (await bulApi(`/latest-import`)).data;
