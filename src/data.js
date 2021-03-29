@@ -452,7 +452,7 @@ export const buildShelterMapUrl = async (cityId) => {
 export const buildAddressData = async (cityId, egonId) => {
   const data = await fetchAddressData(cityId, egonId);
 
-  const msg = `<b>${data.indirizzo_compl}</b>, <b>${data.comune}</b>:
+  const msg = `<b>${data.indirizzo_compl}</b>, <i>${data.comune}</i>
 
 Tipologia civico: <b>${data.tipologia_civico_22}</b>
 
