@@ -3,10 +3,13 @@ import escape from "html-escape";
 
 import { cities, regions } from "./init.js";
 import {
+  fetchAddresses,
   buildFiberData,
   buildFWAData,
   buildCityPCNData,
   buildShelterMapUrl,
+  buildAddressData,
+  buildAddressInfoUrl,
 } from "./data.js";
 
 const substring = (s1, s2) => s1.toLowerCase().includes(s2.toLowerCase());
@@ -19,8 +22,37 @@ const msgExtra = { parse_mode: "HTML", disable_web_page_preview: true };
 // Set containing pending cancel requests.
 export const cancelRequests = new Set();
 
+// Get city name and region name from ID.
+const getCityRegionNamesFromId = (cityId) => {
+  const [city] = cities.filter((c) => c.id === parseInt(cityId));
+
+  // If city found,
+  if (city) {
+    // Return city name and ragion name.
+    return [city.name, city.region_name];
+  }
+
+  // Otherwise, don't return anything.
+  return null;
+};
+
+// Check if address search city region names are valid.
+const getCityIdFromCityRegionNames = (cityName, regionName) =>
+  cities.filter((c) => c.name === cityName && c.region_name === regionName)[0]
+    ?.id;
+
+// Get region id from city id.
+const getRegionIdFromCityId = (cityId) => {
+  const regionName = cities.filter((c) => c.id === parseInt(cityId))[0]
+    .region_name;
+
+  const regionId = regions.filter((r) => r.name === regionName)[0].id;
+
+  return regionId;
+};
+
 // Template for query result.
-const buildResult = (id, title, description) => ({
+const buildResult = (id, title, description = "") => ({
   type: "article",
   id,
   title,
@@ -35,9 +67,32 @@ const buildResult = (id, title, description) => ({
 });
 
 // Filter arrays based on query and build query results array, returning the
-// first 50 results.
-export const buildResults = (query) =>
-  [
+// first 50 results (for city/region search).
+export const buildResults = async (query) => {
+  // Check if it's an address search or a city/region search.
+  const addressQuery = query.split(", ");
+
+  if (addressQuery.length >= 3) {
+    let [regionName, cityName, ...address] = addressQuery;
+    address = address.join(", ").toLowerCase();
+
+    // Check if queried city/region is valid.
+    const cityId = getCityIdFromCityRegionNames(cityName, regionName);
+
+    // If not valid, don't reply to query.
+    if (!cityId) {
+      return;
+    }
+
+    // Otherwise, query BUL API.
+    const addresses = await fetchAddresses(cityId, regionName, address);
+
+    return addresses.map(({ id_egon, indirizzo_compl }) =>
+      buildResult(`${cityId}_${id_egon}`, indirizzo_compl),
+    );
+  }
+
+  return [
     ...regions
       .filter((r) => substring(r.name, query))
       .map((r) => buildResult(r.id, r.name, "Regione")),
@@ -47,27 +102,7 @@ export const buildResults = (query) =>
   ]
     .sort((a, b) => a.title.length - b.title.length)
     .slice(0, 50);
-
-// Get city name and region name from ID.
-const getCityRegionNamesFromId = (cityId) => {
-  const [city] = cities.filter((c) => c.id === parseInt(cityId));
-
-  // If city found,
-  if (city) {
-    console.log(city);
-
-    // Return city name and ragion name.
-    return [city.name, city.region_name];
-  }
-
-  // Otherwise, don't return anything.
-  return null;
 };
-
-// Check if address search city region names are valid.
-const getCityIdFromCityRegionNames = (cityName, regionName) =>
-  cities.filter((c) => c.name === cityName && c.region_name === regionName)[0]
-    ?.id;
 
 const showOpError = (ctx) =>
   ctx
@@ -249,6 +284,27 @@ export const showCityPCNData = async (prevStatus, cityId, ctx) => {
       ...Markup.inlineKeyboard(buttons),
     });
   } catch (error) {
+    return showOpError(ctx);
+  }
+};
+
+export const showAddressData = async (cityId, egonId, ctx) => {
+  try {
+    const message = await buildAddressData(cityId, egonId);
+
+    const regionId = getRegionIdFromCityId(cityId);
+
+    return ctx.editMessageText(message, {
+      ...msgExtra,
+      ...Markup.inlineKeyboard([
+        Markup.button.url(
+          "🔗  Visualizza sul sito BUL",
+          buildAddressInfoUrl(regionId, cityId, egonId),
+        ),
+      ]),
+    });
+  } catch (error) {
+    console.error(error);
     return showOpError(ctx);
   }
 };

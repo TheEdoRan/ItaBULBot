@@ -9,6 +9,7 @@ import {
   showFWAData,
   cancelRequests,
   showCityPCNData,
+  showAddressData,
 } from "./utils.js";
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
@@ -27,17 +28,25 @@ bot.command(
 );
 
 // Display cities/regions in inline query.
-bot.on("inline_query", (ctx) => {
-  // TODO: implement address search from API.
-  const results = buildResults(ctx.inlineQuery.query);
+bot.on("inline_query", async (ctx) => {
+  const results = await buildResults(ctx.inlineQuery.query);
 
-  return ctx.answerInlineQuery(results).catch((_) => {});
+  // Cache results for 1 day on Telegram servers.
+  return ctx.answerInlineQuery(results, { cache_time: 86400 }).catch((_) => {});
 });
 
 // User chose city or region.
 bot.on("chosen_inline_result", (ctx) => {
-  // City/region ID.
+  // City/region or city and egon ids.
   const id = ctx.chosenInlineResult.result_id;
+
+  const addressSearch = id.match(/^(\d+)_(\d+)/);
+
+  if (addressSearch) {
+    const [_, cityId, egonId] = addressSearch;
+
+    return showAddressData(cityId, egonId, ctx).catch((_) => {});
+  }
 
   // Display fiber data by default.
   return showFiberData(id, ctx).catch((_) => {});
