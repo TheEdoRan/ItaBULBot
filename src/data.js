@@ -121,7 +121,7 @@ const getCoverageTypeName = (cvgPos) => {
     case 0:
       return "FTTH/FTTB";
     case 1:
-      return "Rame";
+      return "FTTC";
     case 2:
       return "FWA VHCN";
     case 3:
