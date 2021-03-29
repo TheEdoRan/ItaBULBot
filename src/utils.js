@@ -48,19 +48,24 @@ export const buildResults = (query) =>
     .sort((a, b) => a.title.length - b.title.length)
     .slice(0, 50);
 
-// Determine if we have to display the "address search" button or not, depending
-// on the size of the results array (it has to be just 1 result) and if it's a
-// city or not (works only for cities, obviously).
-export const getInlineAddressSearchButton = (results) =>
-  results.length !== 1 || getLevel(results[0].id) === "region"
-    ? {}
-    : {
-        switch_pm_text: `Cerca un indirizzo per ${results[0].title}`,
-        switch_pm_parameter: `address_search_${results[0].name}_${results[0].region_name}`,
-      };
+// Get city name and region name from ID.
+const getCityRegionNamesFromId = (cityId) => {
+  const [city] = cities.filter((c) => c.id === parseInt(cityId));
+
+  // If city found,
+  if (city) {
+    console.log(city);
+
+    // Return city name and ragion name.
+    return [city.name, city.region_name];
+  }
+
+  // Otherwise, don't return anything.
+  return null;
+};
 
 // Check if address search city region names are valid.
-export const getCityIdFromCityRegionNames = (cityName, regionName) =>
+const getCityIdFromCityRegionNames = (cityName, regionName) =>
   cities.filter((c) => c.name === cityName && c.region_name === regionName)[0]
     ?.id;
 
@@ -68,6 +73,18 @@ const showOpError = (ctx) =>
   ctx
     .editMessageText("😕  <i>Errore nell'eseguire l'operazione.</i>", msgExtra)
     .catch(() => {});
+
+// Get Markup button that switches bot in inline mode, for address search.
+export const getAddressSearchInlineButton = (id) => {
+  const [cityName, regionName] = getCityRegionNamesFromId(id);
+
+  return [
+    Markup.button.switchToCurrentChat(
+      "🔍 Cerca un indirizzo per questo comune",
+      `${regionName}, ${cityName}, `,
+    ),
+  ];
+};
 
 // For /start and /aiuto.
 export const showHelp = async (ctx) => {
@@ -100,7 +117,12 @@ Il codice sorgente e la relativa documentazione si possono trovare a <a href="ht
 Sono ben accetti feedback, per quanto riguarda segnalazioni di bug, proposte per miglioramenti o domande in generale sul funzionamento del bot stesso.
 Puoi contattarmi sia su <a href="https://github.com/theedoran/itabulbot">GitHub</a> aprendo una issue, oppure in privato qui su Telegram, a @TheEdoRan.`;
 
-  return ctx.reply(msg, msgExtra);
+  return ctx.reply(msg, {
+    ...msgExtra,
+    ...Markup.inlineKeyboard([
+      Markup.button.switchToCurrentChat("🔍 Cerca un comune o una regione", ""),
+    ]),
+  });
 };
 
 export const showFiberData = async (id, ctx) => {
@@ -131,6 +153,11 @@ export const showFiberData = async (id, ctx) => {
           `show_pcn_details_fiber_${id}`,
         ),
       );
+    }
+
+    // Only for cities, push address search button in keyboard array.
+    if (getLevel(id) === "city") {
+      buttons.push(getAddressSearchInlineButton(id));
     }
 
     // Check if we should cancel the operation (user pressed on cancel button).
@@ -173,6 +200,11 @@ export const showFWAData = async (id, ctx) => {
       buttons[0].push(
         Markup.button.callback("🗄  Dettagli PCN", `show_pcn_details_fwa_${id}`),
       );
+    }
+
+    // Only for cities, push address search button in keyboard array.
+    if (getLevel(id) === "city") {
+      buttons.push(getAddressSearchInlineButton(id));
     }
 
     // Update message with data.
