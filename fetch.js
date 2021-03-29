@@ -21,7 +21,7 @@ if (!fs.existsSync(JSON_PATH)) {
 
     regions = regions.map((r) => ({
       id: r.region_id,
-      name: r.region_id === 21 ? "Trentino Alto Adige-Trento" : r.region_name,
+      name: r.region_name,
     }));
 
     // Write regions to JSON.

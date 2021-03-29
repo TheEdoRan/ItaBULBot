@@ -1,6 +1,5 @@
 import {} from "dotenv/config.js";
 import { Telegraf } from "telegraf";
-
 import logger from "./logger.js";
 
 import {
@@ -10,6 +9,7 @@ import {
   showFWAData,
   cancelRequests,
   showCityPCNData,
+  showAddressData,
 } from "./utils.js";
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
@@ -20,27 +20,33 @@ if (process.env.DEBUG) {
   bot.use(logger);
 }
 
-bot.telegram
-  .getMe()
-  .then((info) => (bot.options.username = info.username))
-  .catch((_) => {});
-
-// Start/help command.
-bot.command(["start", "aiuto"], (ctx) => {
-  return showHelp(ctx).catch((_) => {});
-});
+// Start/help command (works for private chat only).
+bot.command(
+  ["start", "aiuto"],
+  (ctx, next) => ctx.chat.type === "private" && next(),
+  (ctx) => showHelp(ctx).catch((_) => {}),
+);
 
 // Display cities/regions in inline query.
-bot.on("inline_query", (ctx) => {
-  const results = buildResults(ctx.inlineQuery.query);
+bot.on("inline_query", async (ctx) => {
+  const results = await buildResults(ctx.inlineQuery.query);
 
-  return ctx.answerInlineQuery(results).catch((_) => {});
+  // Cache results for 1 day on Telegram servers.
+  return ctx.answerInlineQuery(results, { cache_time: 86400 }).catch((_) => {});
 });
 
 // User chose city or region.
 bot.on("chosen_inline_result", (ctx) => {
-  // City/region ID.
+  // City/region or city and egon ids.
   const id = ctx.chosenInlineResult.result_id;
+
+  const addressSearch = id.match(/^(\d+)_(\d+)/);
+
+  if (addressSearch) {
+    const [_, cityId, egonId] = addressSearch;
+
+    return showAddressData(cityId, egonId, ctx).catch((_) => {});
+  }
 
   // Display fiber data by default.
   return showFiberData(id, ctx).catch((_) => {});

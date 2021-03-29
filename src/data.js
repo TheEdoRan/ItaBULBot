@@ -1,6 +1,7 @@
 import moment from "moment";
 import memoize from "memoizee";
 import { bulApi, ofApi } from "./api.js";
+import { getLevel } from "./utils.js";
 
 /***************
       FETCH
@@ -48,12 +49,37 @@ const fetchShelterData = async (cityId) => {
   }
 };
 
+// Get addresses from API.
+export const fetchAddresses = async (cityId, regionName, address) => {
+  // Encode query.
+  regionName = encodeURIComponent(regionName);
+  address = encodeURIComponent(address);
+
+  try {
+    return (
+      await bulApi(
+        `/address-search?region=${regionName}&city=${cityId}&address=${address}`,
+      )
+    ).data;
+  } catch (e) {
+    return [];
+  }
+};
+
+// Get address info from API.
+const fetchAddressData = async (cityId, egonId) => {
+  try {
+    const { data } = await bulApi(`/address-info/${cityId}/${egonId}`);
+
+    return data;
+  } catch (e) {
+    return null;
+  }
+};
+
 /***************
       UTILS
 ****************/
-
-// Ugly but it works.
-const getLevel = (id) => (parseInt(id) > 21 ? "city" : "region");
 
 // Get last update time from API.
 const fetchLastUpdate = async () => (await bulApi(`/latest-import`)).data;
@@ -70,6 +96,70 @@ const formatDate = (date) =>
   !!date
     ? `<b>${moment(date).format("DD/MM/YYYY")}</b>`
     : "<i>non disponibile</i>";
+
+const getCoverageTypePos = (key) => {
+  if (key.endsWith("_num_fo")) {
+    return 0;
+  }
+
+  if (key.endsWith("_rame")) {
+    return 1;
+  }
+
+  if (key.endsWith("_num_fwa_vhcn")) {
+    return 2;
+  }
+
+  if (key.endsWith("_num_fwa_no_vhcn")) {
+    return 3;
+  }
+};
+
+// Get coverage name by array position.
+const getCoverageTypeName = (cvgPos) => {
+  switch (cvgPos) {
+    case 0:
+      return "FTTH/FTTB";
+    case 1:
+      return "Rame";
+    case 2:
+      return "FWA VHCN";
+    case 3:
+      return "FWA no VHCN";
+  }
+};
+
+const getAddressPrivateCoverages = (data) => {
+  let years = {};
+
+  Object.keys(data).map((k) => {
+    const coverageMatch = k.match(/^a(\d{2})(.+)$/);
+
+    if (coverageMatch) {
+      let [_, year, rest] = coverageMatch;
+      year = `20${year}`;
+      const position = getCoverageTypePos(rest);
+
+      years[year] = years[year] || [];
+      years[year][position] = data[k];
+    }
+  });
+
+  const msg = Object.entries(years)
+    .map(([year, coverages]) => {
+      let yearText = `  <b>${year}</b>\n`;
+      yearText += coverages
+        .map(
+          (value, pos) => `    ${getCoverageTypeName(pos)}: <b>${value}</b>\n`,
+        )
+        .join("");
+
+      return yearText;
+    })
+    .join("\n");
+
+  return msg;
+};
 
 /***************
       CITY
@@ -347,6 +437,7 @@ Informazioni <a href=\"https://fibra.click/riconoscere-rete-bul/#pcn-centrali\">
   return [msg, data.pcn.sede_id];
 };
 
+// Build URL with waypoint for shelter geolocation.
 export const buildShelterMapUrl = async (cityId) => {
   const coords = await memoShelterData(cityId);
 
@@ -356,3 +447,20 @@ export const buildShelterMapUrl = async (cityId) => {
 
   return `https://www.google.com/maps/search/?api=1&query=${coords.latitude},${coords.longitude}`;
 };
+
+// Build address infos.
+export const buildAddressData = async (cityId, egonId) => {
+  const data = await fetchAddressData(cityId, egonId);
+
+  const msg = `<b>${data.indirizzo_compl}</b>, <b>${data.comune}</b>:
+
+Tipologia civico: <b>${data.tipologia_civico_22}</b>
+
+Coperture private:
+${getAddressPrivateCoverages(data)}`;
+
+  return msg;
+};
+
+export const buildAddressInfoUrl = (regionId, cityId, egonId) =>
+  `https://bandaultralarga.italia.it/indirizzo/?address=region-${regionId}_city-${cityId}_street-${egonId}`;
