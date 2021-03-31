@@ -49,7 +49,7 @@ bot.command(
 bot.on("inline_query", async (ctx) => {
   const [results, addressHowTo] = await buildResults(ctx.inlineQuery.query);
 
-  let msgExtra = { cache_time: 86400 };
+  let msgExtra = { cache_time: 300 };
 
   if (addressHowTo) {
     msgExtra = {
