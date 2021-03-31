@@ -49,7 +49,8 @@ bot.command(
 bot.on("inline_query", async (ctx) => {
   const [results, addressHowTo] = await buildResults(ctx.inlineQuery.query);
 
-  let msgExtra = { cache_time: 300 };
+  // Cache for 1 hour.
+  let msgExtra = { cache_time: 3600 };
 
   if (addressHowTo) {
     msgExtra = {
