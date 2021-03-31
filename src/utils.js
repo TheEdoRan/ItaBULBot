@@ -4,6 +4,7 @@ import escape from "html-escape";
 import { cities, regions } from "./init.js";
 import {
   fetchAddresses,
+  fetchEgonId,
   buildFiberData,
   buildFWAData,
   buildCityPCNData,
@@ -22,31 +23,18 @@ const msgExtra = { parse_mode: "HTML", disable_web_page_preview: true };
 // Set containing pending cancel requests.
 export const cancelRequests = new Set();
 
-// Get city name and region name from ID.
-const getCityRegionNamesFromId = (cityId) => {
-  const [city] = cities.filter((c) => c.id === parseInt(cityId));
+// Get city name from id.
+const getCityNameFromId = (cityId) =>
+  cities.find((c) => c.id === parseInt(cityId))?.name;
 
-  // If city found,
-  if (city) {
-    // Return city name and ragion name.
-    return [city.name, city.region_name];
-  }
-
-  // Otherwise, don't return anything.
-  return null;
-};
-
-// Check if address search city region names are valid.
-const getCityIdFromCityRegionNames = (cityName, regionName) =>
-  cities.filter((c) => c.name === cityName && c.region_name === regionName)[0]
-    ?.id;
+// Get city id from name.
+const getCityIdFromName = (cityName) =>
+  cities.find((c) => c.name.toLowerCase() === cityName.toLowerCase())?.id;
 
 // Get region id from city id.
 const getRegionIdFromCityId = (cityId) => {
-  const regionName = cities.filter((c) => c.id === parseInt(cityId))[0]
-    .region_name;
-
-  const regionId = regions.filter((r) => r.name === regionName)[0].id;
+  const regionName = cities.find((c) => c.id === parseInt(cityId)).region_name;
+  const regionId = regions.find((r) => r.name === regionName).id;
 
   return regionId;
 };
@@ -67,32 +55,10 @@ const buildResult = (id, title, description = "") => ({
 });
 
 // Filter arrays based on query and build query results array, returning the
-// first 50 results (for city/region search).
+// first 10 results (for city/region search).
 export const buildResults = async (query) => {
-  // Check if it's an address search or a city/region search.
-  const addressQuery = query.split(", ");
-
-  if (addressQuery.length >= 3) {
-    let [regionName, cityName, ...address] = addressQuery;
-    address = address.join(", ").toLowerCase();
-
-    // Check if queried city/region is valid.
-    const cityId = getCityIdFromCityRegionNames(cityName, regionName);
-
-    // If not valid, don't reply to query.
-    if (!cityId) {
-      return;
-    }
-
-    // Otherwise, query BUL API.
-    const addresses = await fetchAddresses(cityId, regionName, address);
-
-    return addresses.map(({ id_egon, indirizzo_compl }) =>
-      buildResult(`${cityId}_${id_egon}`, indirizzo_compl),
-    );
-  }
-
-  return [
+  // Higher priority to city/region search.
+  let results = [
     ...regions
       .filter((r) => substring(r.name, query))
       .map((r) => buildResult(r.id, r.name, "Regione")),
@@ -101,7 +67,28 @@ export const buildResults = async (query) => {
       .map((c) => buildResult(c.id, c.name, c.region_name)),
   ]
     .sort((a, b) => a.title.length - b.title.length)
-    .slice(0, 50);
+    .slice(0, 10);
+
+  // If no city/region matches, switch to address search.
+  if (!results.length) {
+    // Query API.
+    const addresses = await fetchAddresses(query);
+
+    results = addresses
+      .filter((a) => a.level === "street" && a.number)
+      .map(({ id: streetId, street, number, city, province, exponent }) =>
+        buildResult(
+          `address_${getCityIdFromName(city)}_${streetId}_${number}${
+            exponent ? "/" + exponent : ""
+          }`,
+          `${street}, ${number}${exponent ? "/" + exponent : ""}`,
+          `${city} (${province})`,
+        ),
+      );
+  }
+
+  // Return results
+  return results;
 };
 
 const showOpError = (ctx) =>
@@ -111,12 +98,12 @@ const showOpError = (ctx) =>
 
 // Get Markup button that switches bot in inline mode, for address search.
 export const getAddressSearchInlineButton = (id) => {
-  const [cityName, regionName] = getCityRegionNamesFromId(id);
+  const cityName = getCityNameFromId(id);
 
   return [
     Markup.button.switchToCurrentChat(
       "🔍 Cerca un indirizzo per questo comune",
-      `${regionName}, ${cityName}, `,
+      `${cityName}, `,
     ),
   ];
 };
@@ -288,10 +275,17 @@ export const showCityPCNData = async (prevStatus, cityId, ctx) => {
   }
 };
 
-export const showAddressData = async (cityId, egonId, ctx) => {
+export const showAddressData = async (cityId, streetId, civic, ctx) => {
   try {
-    const message = await buildAddressData(cityId, egonId);
+    // We have to query API one more time to get egonId.
+    const egonId = await fetchEgonId(streetId, civic);
 
+    // If no egon id found, show the operation error message.
+    if (!egonId) {
+      return showOpError(ctx);
+    }
+
+    const message = await buildAddressData(cityId, egonId);
     const regionId = getRegionIdFromCityId(cityId);
 
     return ctx.editMessageText(message, {

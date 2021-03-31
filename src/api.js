@@ -50,3 +50,24 @@ export const ofApi = (endpoint) => {
     },
   });
 };
+
+export const avtApi = (endpoint) =>
+  axios.get(endpoint, {
+    baseURL: "https://www.fastweb.it/AVTSL/ajax",
+    headers: {
+      accept: "application/json, text/javascript, */*; q=0.01",
+      "accept-encoding": "gzip, deflate, br",
+      "accept-language": "it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7",
+      connection: "keep-alive",
+      DNT: 1,
+      host: "www.fastweb.it",
+      referer: "https://www.fastweb.it/AVT/Start/?layout=standalone&modal",
+      "sec-fetch-dest": "empty",
+      "sec-fetch-mode": "cors",
+      "sec-fetch-site": "same-origin",
+      "sec-gpc": "1",
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.105 Safari/537.36",
+      "x-requested-with": "XMLHttpRequest",
+    },
+  });

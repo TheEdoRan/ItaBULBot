@@ -32,7 +32,9 @@ bot.on("inline_query", async (ctx) => {
   const results = await buildResults(ctx.inlineQuery.query);
 
   // Cache results for 1 day on Telegram servers.
-  return ctx.answerInlineQuery(results, { cache_time: 86400 }).catch((_) => {});
+  return ctx
+    .answerInlineQuery(results, { cache_time: /*86400*/ 0 })
+    .catch((_) => {});
 });
 
 // User chose city or region.
@@ -40,12 +42,12 @@ bot.on("chosen_inline_result", (ctx) => {
   // City/region or city and egon ids.
   const id = ctx.chosenInlineResult.result_id;
 
-  const addressSearch = id.match(/^(\d+)_(\d+)/);
+  const addressSearch = id.match(/^address_(\d+)_(\d+)_(.+)$/);
 
   if (addressSearch) {
-    const [_, cityId, egonId] = addressSearch;
+    const [_, cityId, streetId, civic] = addressSearch;
 
-    return showAddressData(cityId, egonId, ctx).catch((_) => {});
+    return showAddressData(cityId, streetId, civic, ctx).catch((_) => {});
   }
 
   // Display fiber data by default.

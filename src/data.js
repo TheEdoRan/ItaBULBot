@@ -1,6 +1,6 @@
 import moment from "moment";
 import memoize from "memoizee";
-import { bulApi, ofApi } from "./api.js";
+import { avtApi, bulApi, ofApi } from "./api.js";
 import { getLevel } from "./utils.js";
 
 /***************
@@ -18,9 +18,9 @@ const fetchAPIData = async (level, id) => {
 
     try {
       // Call OF API to find out OF ID of city, via its name.
-      const ofCityId = (await ofApi(`/list/cities/${provId}`)).data.data.filter(
+      const ofCityId = (await ofApi(`/list/cities/${provId}`)).data.data.find(
         (city) => city.name === cityName,
-      )[0].id;
+      ).id;
 
       const ofCityData = (await ofApi(`/site/${ofCityId}`)).data;
 
@@ -50,19 +50,34 @@ const fetchShelterData = async (cityId) => {
 };
 
 // Get addresses from API.
-export const fetchAddresses = async (cityId, regionName, address) => {
+export const fetchAddresses = async (query) => {
   // Encode query.
-  regionName = encodeURIComponent(regionName);
-  address = encodeURIComponent(address);
+  const addressQuery = encodeURIComponent(query);
 
   try {
-    return (
-      await bulApi(
-        `/address-search?region=${regionName}&city=${cityId}&address=${address}`,
-      )
-    ).data;
+    const { data } = await avtApi(`/getVia/?q=${addressQuery}`);
+    return data.resp;
   } catch (e) {
+    console.error(e.message);
     return [];
+  }
+};
+
+// Get egonId from API.
+export const fetchEgonId = async (streetId, civic) => {
+  // Encode civic number.
+  civic = civic.toUpperCase();
+  const encodedCivic = encodeURIComponent(civic);
+
+  try {
+    const { data } = await avtApi(
+      `/getCivic/?q=${encodedCivic}&idvia=${streetId}`,
+    );
+
+    return data.resp.find((c) => c.toponomastico === civic)?.IdCivico;
+  } catch (e) {
+    console.error(e);
+    return null;
   }
 };
 
