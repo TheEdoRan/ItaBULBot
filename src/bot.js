@@ -52,7 +52,7 @@ bot.on("inline_query", async (ctx) => {
   // Cache results for 1 day on Telegram servers.
   return ctx
     .answerInlineQuery(results, {
-      cache_time: /*86400*/ 0,
+      cache_time: 86400,
       switch_pm_text: "🔍  Scopri come cercare un indirizzo",
       switch_pm_parameter: "address_search",
     })
