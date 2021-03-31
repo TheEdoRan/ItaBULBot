@@ -76,9 +76,11 @@ export const buildResults = async (query) => {
         .map(({ id: streetId, street, number, city, province, exponent }) =>
           buildResult(
             `address_${getCityIdFromName(city)}_${streetId}_${number}${
-              exponent ? "/" + exponent : ""
+              exponent ? "/" + exponent.toUpperCase() : ""
             }`,
-            `${street}, ${number}${exponent ? "/" + exponent : ""}`,
+            `${street}, ${number}${
+              exponent ? "/" + exponent.toUpperCase() : ""
+            }`,
             `${city} (${province})`,
           ),
         );
