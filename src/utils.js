@@ -23,10 +23,6 @@ const msgExtra = { parse_mode: "HTML", disable_web_page_preview: true };
 // Set containing pending cancel requests.
 export const cancelRequests = new Set();
 
-// Get city name from id.
-const getCityNameFromId = (cityId) =>
-  cities.find((c) => c.id === parseInt(cityId))?.name;
-
 // Get city id from name.
 const getCityIdFromName = (cityName) =>
   cities.find((c) => c.name.toLowerCase() === cityName.toLowerCase())?.id;
@@ -96,18 +92,6 @@ const showOpError = (ctx) =>
     .editMessageText("😕  <i>Errore nell'eseguire l'operazione.</i>", msgExtra)
     .catch(() => {});
 
-// Get Markup button that switches bot in inline mode, for address search.
-export const getAddressSearchInlineButton = (id) => {
-  const cityName = getCityNameFromId(id);
-
-  return [
-    Markup.button.switchToCurrentChat(
-      "🔍 Cerca un indirizzo per questo comune",
-      `${cityName}, `,
-    ),
-  ];
-};
-
 // For /start and /aiuto.
 export const showHelp = async (ctx) => {
   const msg = `
@@ -125,8 +109,12 @@ Ti basterà digitare l'username del bot stesso, seguito dal termine di ricerca, 
 
 Nella finestrella che si apre, basterà premere sulla città o regione corrispondente ed il bot penserà al resto.
 
+<b>Novità</b> ❗️ 
+Il bot ora supporta anche la <b>ricerca per indirizzo</b>. Lancia il comando /indirizzo per più informazioni.
+
 <b>Comandi</b>  🖋
 /aiuto - Mostra questo messaggio.
+/indirizzo - Mostra l'aiuto per la ricerca ad indirizzo.
 
 <b>FAQ</b> ❓
 • <b>Il bot ruba i miei dati personali?</b> <i>No, tranquillo, siamo dalla tua parte.</i>
@@ -142,7 +130,45 @@ Puoi contattarmi sia su <a href="https://github.com/theedoran/itabulbot">GitHub<
   return ctx.reply(msg, {
     ...msgExtra,
     ...Markup.inlineKeyboard([
-      Markup.button.switchToCurrentChat("🔍 Cerca un comune o una regione", ""),
+      Markup.button.switchToCurrentChat(
+        "🔍  Cerca un comune, una regione o un indirizzo",
+        "",
+      ),
+    ]),
+  });
+};
+
+export const showAddressSearchHelp = async (ctx) => {
+  const msg = `
+Ciao <b>${escape(ctx.from.first_name)}</b> 👋!
+
+Questo bot supporta anche la ricerca per indirizzo, come presente sul sito <b>BUL</b>.
+
+Ti basterà premere sul bottone qui sotto per avviare la ricerca di un qualsiasi indirizzo, compreso di <b>numero civico</b>, come ad esempio:
+
+<code>@itabulbot Corso d'Italia, 41, Roma</code>
+
+Una volta fatto ciò, nella finestrella che si apre, basterà premere sulla voce che ti interessa e il bot provvederà a scaricare i dati aggiornati riguardanti l'indirizzo da te scelto.
+
+Troverai anche un comodo bottone per raggiungere la pagina corrispondente sul sito <b>BUL</b>.
+
+<b>Ricorda</b> ❗️
+
+Il funzionamento è il medesimo della ricerca delle città o delle regioni, quindi puoi eseguire la ricerca in <b>qualsiasi chat</b>.
+
+Ti basterà scrivere un indirizzo a tua scelta, proprio come qui in chat privata con me. 
+
+<b>Fai attenzione, però</b>: se deciderai di utilizzare il bot in gruppi pubblici, <b>tutti potranno vedere l'indirizzo cercato</b>.
+
+Il consiglio è quindi di utilizzare la ricerca per indirizzo in <b>questa chat</b>.`;
+
+  return ctx.reply(msg, {
+    ...msgExtra,
+    ...Markup.inlineKeyboard([
+      Markup.button.switchToCurrentChat(
+        "🔍  Cerca un comune, una regione o un indirizzo",
+        "",
+      ),
     ]),
   });
 };
@@ -175,11 +201,6 @@ export const showFiberData = async (id, ctx) => {
           `show_pcn_details_fiber_${id}`,
         ),
       );
-    }
-
-    // Only for cities, push address search button in keyboard array.
-    if (getLevel(id) === "city") {
-      buttons.push(getAddressSearchInlineButton(id));
     }
 
     // Check if we should cancel the operation (user pressed on cancel button).
@@ -222,11 +243,6 @@ export const showFWAData = async (id, ctx) => {
       buttons[0].push(
         Markup.button.callback("🗄  Dettagli PCN", `show_pcn_details_fwa_${id}`),
       );
-    }
-
-    // Only for cities, push address search button in keyboard array.
-    if (getLevel(id) === "city") {
-      buttons.push(getAddressSearchInlineButton(id));
     }
 
     // Update message with data.
@@ -280,9 +296,11 @@ export const showAddressData = async (cityId, streetId, civic, ctx) => {
     // We have to query API one more time to get egonId.
     const egonId = await fetchEgonId(streetId, civic);
 
-    // If no egon id found, show the operation error message.
+    // If egon id not found, show an error message.
     if (!egonId) {
-      return showOpError(ctx);
+      return ctx.editMessageText("❌  <i>Numero civico non trovato.</i>", {
+        ...msgExtra,
+      });
     }
 
     const message = await buildAddressData(cityId, egonId);

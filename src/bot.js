@@ -4,6 +4,7 @@ import logger from "./logger.js";
 
 import {
   showHelp,
+  showAddressSearchHelp,
   buildResults,
   showFiberData,
   showFWAData,
@@ -20,11 +21,28 @@ if (process.env.DEBUG) {
   bot.use(logger);
 }
 
-// Start/help command (works for private chat only).
+// Start/help info message (works for private chats only).
 bot.command(
   ["start", "aiuto"],
   (ctx, next) => ctx.chat.type === "private" && next(),
-  (ctx) => showHelp(ctx).catch((_) => {}),
+  (ctx) => {
+    const addressSearch = ctx.message.text.endsWith("address_search");
+
+    // If user wants to do an address search, show the how-to message.
+    if (addressSearch) {
+      return showAddressSearchHelp(ctx).catch((_) => {});
+    }
+
+    // Otherwise, show the classic help message.
+    showHelp(ctx).catch((_) => {});
+  },
+);
+
+// Address search info message (works for private chats only).
+bot.command(
+  "indirizzo",
+  (ctx, next) => ctx.chat.type === "private" && next(),
+  (ctx) => showAddressSearchHelp(ctx).catch((_) => {}),
 );
 
 // Display cities/regions in inline query.
@@ -33,7 +51,11 @@ bot.on("inline_query", async (ctx) => {
 
   // Cache results for 1 day on Telegram servers.
   return ctx
-    .answerInlineQuery(results, { cache_time: /*86400*/ 0 })
+    .answerInlineQuery(results, {
+      cache_time: /*86400*/ 0,
+      switch_pm_text: "🔍  Scopri come cercare un indirizzo",
+      switch_pm_parameter: "address_search",
+    })
     .catch((_) => {});
 });
 
