@@ -1,4 +1,4 @@
-# #BandaUltraLarga Italia Bot
+# #BandaUltraLarga Bot
 
 ## [@ItaBULBot](http://telegram.me/itabulbot)
 
