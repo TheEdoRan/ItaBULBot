@@ -58,7 +58,6 @@ export const fetchAddresses = async (query) => {
     const { data } = await avtApi(`/getVia/?q=${addressQuery}`);
     return data.resp;
   } catch (e) {
-    console.error(e.message);
     return [];
   }
 };

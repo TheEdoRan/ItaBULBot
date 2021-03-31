@@ -70,21 +70,32 @@ export const buildResults = async (query) => {
     // Query API.
     const addresses = await fetchAddresses(query);
 
-    results = addresses
-      .filter((a) => a.level === "street" && a.number)
-      .map(({ id: streetId, street, number, city, province, exponent }) =>
-        buildResult(
-          `address_${getCityIdFromName(city)}_${streetId}_${number}${
-            exponent ? "/" + exponent : ""
-          }`,
-          `${street}, ${number}${exponent ? "/" + exponent : ""}`,
-          `${city} (${province})`,
-        ),
-      );
+    try {
+      results = addresses
+        .filter((a) => a.level === "street" && a.number)
+        .map(({ id: streetId, street, number, city, province, exponent }) =>
+          buildResult(
+            `address_${getCityIdFromName(city)}_${streetId}_${number}${
+              exponent ? "/" + exponent : ""
+            }`,
+            `${street}, ${number}${exponent ? "/" + exponent : ""}`,
+            `${city} (${province})`,
+          ),
+        );
+    } catch (_) {
+      // If any errors processing the address, return empty array with
+      // true how-to address search flag.
+      return [[], true];
+    }
+
+    // Return results and false flag (address search, no need to display
+    // the address search how-to button).
+    return [results, false];
   }
 
-  // Return results
-  return results;
+  // Return results and true flag (no address search, we need to display
+  // how-to button).
+  return [results, true];
 };
 
 const showOpError = (ctx) =>

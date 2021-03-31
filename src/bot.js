@@ -47,16 +47,20 @@ bot.command(
 
 // Display cities/regions in inline query.
 bot.on("inline_query", async (ctx) => {
-  const results = await buildResults(ctx.inlineQuery.query);
+  const [results, addressHowTo] = await buildResults(ctx.inlineQuery.query);
 
-  // Cache results for 1 day on Telegram servers.
-  return ctx
-    .answerInlineQuery(results, {
-      cache_time: 86400,
+  let msgExtra = { cache_time: 86400 };
+
+  if (addressHowTo) {
+    msgExtra = {
+      ...msgExtra,
       switch_pm_text: "🔍  Scopri come cercare un indirizzo",
       switch_pm_parameter: "address_search",
-    })
-    .catch((_) => {});
+    };
+  }
+
+  // Cache results for 1 day on Telegram servers.
+  return ctx.answerInlineQuery(results, msgExtra).catch((_) => {});
 });
 
 // User chose city or region.
