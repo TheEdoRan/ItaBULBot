@@ -2,37 +2,32 @@ import crypto from "crypto";
 import https from "https";
 import axios from "axios";
 
-// OPEN FIBER UTILS
-
-const ofSecret = "6Yk9SPasgejjkapLJ5EkZwBhxFY8eLGLbBaqkfY8ymtFsaJr";
+// Open Fiber utils
+const OF_SECRET = "6Yk9SPasgejjkapLJ5EkZwBhxFY8eLGLbBaqkfY8ymtFsaJr";
 
 const ofTimestamp = () => {
   const date = new Date();
-  return (
-    date.setMinutes(10 * Math.floor(date.getMinutes() / 10)),
-    date.setSeconds(0, 0),
-    Math.round(date.getTime() / 1e3)
-  );
+  return (date.setMinutes(10 * Math.floor(date.getMinutes() / 10)),
+  date.setSeconds(0, 0),
+  Math.round(date.getTime() / 1e3)).toString();
 };
 
-const ofDigest = (endpoint, timestamp) => {
+const ofDigest = (endpoint: string, timestamp: string) => {
   return crypto
-    .createHmac("sha256", ofSecret)
+    .createHmac("sha256", OF_SECRET)
     .update(`GET:${endpoint}:${timestamp}`)
     .digest("hex");
 };
 
-// API CALLS
-
-// Get from BUL API.
-export const bulApi = (endpoint) =>
+// BUL API
+export const bulApi = (endpoint: string) =>
   axios.get(endpoint, {
     baseURL: "https://bandaultralarga.italia.it/wp-json/bul/v1",
     httpsAgent: new https.Agent({ rejectUnauthorized: false }),
   });
 
-// Get from OF API.
-export const ofApi = (endpoint) => {
+// OF API
+export const ofApi = (endpoint: string) => {
   endpoint = `/api2/infratel${endpoint}`;
 
   return axios.get(endpoint, {
@@ -51,7 +46,8 @@ export const ofApi = (endpoint) => {
   });
 };
 
-export const avtApi = (endpoint) =>
+// Address search (AVT) API
+export const avtApi = (endpoint: string) =>
   axios.get(endpoint, {
     baseURL: "https://www.fastweb.it/AVTSL/ajax",
     headers: {
