@@ -2,8 +2,8 @@ import type { Telegraf, Context } from "telegraf";
 import type { Update } from "typegram";
 import { Markup } from "telegraf";
 
-import { replyToMessage } from "./utils";
-import { startHelpCommand, addressCommand } from "../format/commands";
+import { replyToMessage } from "../utils";
+import { startHelpCommand, addressCommand } from "../../format/commands";
 
 // Private chat only middleware.
 const isPrivateChat = (ctx: Context, next: () => Promise<void>) => {

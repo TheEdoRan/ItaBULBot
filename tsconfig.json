@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2019",
+    "experimentalDecorators": true,
     "module": "commonjs",
     "sourceMap": false,
     "rootDir": "./src",
