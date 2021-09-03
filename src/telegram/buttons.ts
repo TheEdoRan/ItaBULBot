@@ -1,6 +1,12 @@
 import { Markup } from "telegraf";
 import { FiberFwa } from "../data/types";
 
+export const StartHelpButton = () =>
+  Markup.button.switchToCurrentChat(
+    "🔍  Cerca un comune, una regione o un indirizzo",
+    ""
+  );
+
 export const FiberButton = (id: string) =>
   Markup.button.callback("🌐  Dettagli fibra", `show_fiber_details_${id}`);
 
