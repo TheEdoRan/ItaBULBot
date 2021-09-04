@@ -1,0 +1,7 @@
+version: "3.9"
+
+services:
+  itabulbot:
+    container_name: itabulbot
+    build: .
+    env_file: .env
