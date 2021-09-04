@@ -6,3 +6,4 @@ services:
     build: .
     env_file: .env
     init: true
+    restart: unless-stopped
