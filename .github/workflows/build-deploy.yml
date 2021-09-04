@@ -37,6 +37,7 @@ jobs:
   deploy:
     name: Deploy to production
     runs-on: ubuntu-latest
+    needs: build_push
     steps:
       - name: Pull new image and recreate container on server
         uses: appleboy/ssh-action@master
