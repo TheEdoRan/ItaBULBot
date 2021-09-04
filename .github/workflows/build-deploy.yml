@@ -47,5 +47,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
+            cd itabulbot
             docker-compose pull
             docker-compose up -d
