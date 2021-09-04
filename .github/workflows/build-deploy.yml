@@ -38,8 +38,8 @@ jobs:
     name: Deploy to production
     runs-on: ubuntu-latest
     steps:
-    - name: Pull new image and recreate container on server
-      uses: appleboy/ssh-action@master
+      - name: Pull new image and recreate container on server
+        uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
