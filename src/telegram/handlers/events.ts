@@ -22,11 +22,7 @@ export const handleEvents = (bot: Telegraf<Context<Update>>) => {
         switch_pm_parameter: "address_search",
       };
     }
-    try {
-      await ctx.answerInlineQuery(results, msgExtra);
-    } catch (e) {
-      console.error(e);
-    }
+    await ctx.answerInlineQuery(results, msgExtra).catch((_) => {});
   });
 
   bot.on("chosen_inline_result", (ctx) => {

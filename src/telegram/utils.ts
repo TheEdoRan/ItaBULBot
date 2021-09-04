@@ -19,16 +19,14 @@ export const replyToMessage = (
   text: string,
   inlineKeyboard?: Markup.Markup<InlineKeyboardMarkup>
 ) => {
-  try {
-    ctx.reply(text, {
+  ctx
+    .reply(text, {
       ...baseExtraOpts,
       allow_sending_without_reply: true,
       reply_to_message_id: ctx.message?.message_id,
       reply_markup: inlineKeyboard?.reply_markup,
-    });
-  } catch (e) {
-    console.error(e);
-  }
+    })
+    .catch((_) => {});
 };
 
 // Operation error when editing message or when data fetching failed.
@@ -49,12 +47,10 @@ export const editMessage = async (
   text: string,
   inlineKeyboard?: Markup.Markup<InlineKeyboardMarkup>
 ) => {
-  try {
-    ctx.editMessageText(`${text}${await showLatestUpdate()}`, {
+  ctx
+    .editMessageText(`${text}${await showLatestUpdate()}`, {
       ...baseExtraOpts,
       reply_markup: inlineKeyboard?.reply_markup,
-    });
-  } catch (e) {
-    console.error(e);
-  }
+    })
+    .catch((_) => {});
 };

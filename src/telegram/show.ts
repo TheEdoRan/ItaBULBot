@@ -26,8 +26,8 @@ export const showLatestUpdate = async () => {
   try {
     const date = await Fetch.latestUpdate();
     return formatLatestUpdate(date.ws.date);
-  } catch (e) {
-    console.error(e);
+  } catch (e: any) {
+    console.error(`showLatestUpdate error: ${e?.message}`);
     return formatLatestUpdateError();
   }
 };
@@ -59,8 +59,8 @@ export const showFiberData = async (ctx: BotActionContext) => {
     }
 
     editMessage(ctx, message, Markup.inlineKeyboard(buttons));
-  } catch (e) {
-    console.error(e);
+  } catch (e: any) {
+    console.error(`showFiberData error: ${e?.message}`);
     editMessageWithError(ctx);
   }
 };
@@ -92,8 +92,8 @@ export const showFwaData = async (ctx: BotActionContext) => {
     }
 
     editMessage(ctx, message, Markup.inlineKeyboard(buttons));
-  } catch (e) {
-    console.error(e);
+  } catch (e: any) {
+    console.error(`showFwaData error: ${e?.message}`);
     editMessageWithError(ctx);
   }
 };
@@ -130,8 +130,8 @@ export const showPcnData = async (ctx: BotActionContext) => {
       formatPcnData(pcnData!, cityName),
       Markup.inlineKeyboard(buttons)
     );
-  } catch (e) {
-    console.error(e);
+  } catch (e: any) {
+    console.error(`showPcnData error: ${e?.message}`);
     editMessageWithError(ctx);
   }
 };
@@ -159,8 +159,8 @@ export const showAddressData = async (ctx: Context<Update>) => {
     const buttons = [[BulButton({ regionId, cityId, egonId }, "address")]];
 
     editMessage(ctx, formatAddress(data), Markup.inlineKeyboard(buttons));
-  } catch (e) {
-    console.error(e);
+  } catch (e: any) {
+    console.error(`showAddressData error: ${e?.message}`);
     editMessageWithError(ctx);
   }
 };
