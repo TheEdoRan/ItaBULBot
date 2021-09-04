@@ -5,8 +5,7 @@
   "scripts": {
     "fetch": "ts-node-dev ./fetch.js",
     "dev": "ts-node-dev --rs ./src/bot.ts",
-    "build": "tsc",
-    "start": "node ./dist/bot.js"
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
