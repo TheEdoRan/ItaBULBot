@@ -50,6 +50,6 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           envs: REPO_DIR
           script: |
-            cd $REPO_DIR
+            cd ${REPO_DIR,,}
             docker-compose pull
             docker-compose up -d
