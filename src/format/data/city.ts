@@ -33,7 +33,11 @@ ${
     ? ""
     : `Unità immobiliari: ${data.of.ui_ftth || unavailable}
 PAC/PAL: ${data.of.pac_pal || unavailable}
-Importo OdE: ${data.of.pac_pal?.trim() + "€" || unavailable}
+Importo OdE: ${
+        data.of.importo_ode_ftth
+          ? data.of.importo_ode_ftth.trim() + " €"
+          : unavailable
+      }
 Impresa esecutrice: ${data.of.impresa_esecutrice_ftth || unavailable}
 Fornitore DL/CSE: ${data.of.fornitore_dl_cse_ftth || unavailable}`
 }
@@ -56,7 +60,11 @@ ${
     ? ""
     : `Unità immobiliari: ${data.of.ui_fwa || unavailable}
 PAC/PAL: ${data.of.pac_pal || unavailable}
-Importo OdE: ${data.of.pac_pal?.trim() + "€" || unavailable}
+Importo OdE: ${
+        data.of.importo_ode_fwa
+          ? data.of.importo_ode_fwa.trim() + " €"
+          : unavailable
+      }
 Impresa esecutrice: ${data.of.impresa_esecutrice_fwa || unavailable}
 Fornitore DL/CSE: ${data.of.fornitore_dl_cse_fwa || unavailable}`
 }
