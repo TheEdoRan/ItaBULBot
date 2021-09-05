@@ -22,7 +22,7 @@ export const logger = (): MiddlewareFn<Context<Update>> => {
         ? `chosen -> ${ctx.chosenInlineResult.result_id}`
         : "") ||
       (ctx.callbackQuery as CallbackQuery.DataCallbackQuery)?.data ||
-      textMessage.text ||
+      textMessage?.text ||
       ""
     )?.toString();
 
