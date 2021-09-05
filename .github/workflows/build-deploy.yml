@@ -41,13 +41,14 @@ jobs:
     steps:
       - name: Pull new image and recreate container on server
         uses: appleboy/ssh-action@master
+        env:
+          REPO_DIR: ${{ github.event.repository.name }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
-          env:
-            REPO_DIR: ${{ github.event.repository.name }}
+          envs: REPO_DIR
           script: |
             cd $REPO_DIR
             docker-compose pull
