@@ -17,7 +17,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: theedoran/itabulbot
+          images: theedoran/${{ github.event.repository.name }}
           tags: |
             type=raw,value=latest
             type=sha,format=long,prefix=
@@ -46,7 +46,9 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
+          env:
+            REPO_DIR: ${{ github.event.repository.name }}
           script: |
-            cd itabulbot
+            cd $REPO_DIR
             docker-compose pull
             docker-compose up -d
