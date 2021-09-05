@@ -53,7 +53,7 @@ if (!fs.existsSync(JSON_PATH)) {
     );
 
     console.log("Successfully wrote cities to file!");
-  } catch (e) {
-    console.error(e.message);
+  } catch (e: any) {
+    console.error(e?.message);
   }
 })();
