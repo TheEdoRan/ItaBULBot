@@ -9,7 +9,9 @@ Unità immobiliari totali: ${data.people_data.houses}
 ${
   !data.of
     ? ""
-    : `Bando:
+    : `Piano cantiere: ${data.of.piano_cantiere}
+    
+Bando:
   Gara ${data.of.gara} - Lotto ${data.of.lotto} - Fase ${data.of.fase}`
 }`;
 
