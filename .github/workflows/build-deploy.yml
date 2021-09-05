@@ -7,10 +7,10 @@ on:
 
 jobs:
   build_push:
-    name: "Build image and push on Docker Hub"
+    name: Build image and push on Docker Hub
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repo
+      - name: Check out ${{ github.ref }}
         uses: actions/checkout@v2
 
       - name: Extract metadata for Docker image
