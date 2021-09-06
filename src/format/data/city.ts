@@ -25,7 +25,7 @@ export const formatCityFiber = (data: CityAndOf) => `${_formatCity(data)}
 ${
   !data.work_progress.fiber.status
     ? "<b>Non ci sono dati disponibili per la fibra ottica.</b>"
-    : `<b>Fibra ottica</b>
+    : `<b>Fibra ottica</b>  🌐
 
 Stato lavori: <b>${data.work_progress.fiber.status}</b>
 Tipo di intervento: ${data.intervento.fiber || unavailable}
@@ -52,7 +52,7 @@ export const formatCityFwa = (data: CityAndOf) => `${_formatCity(data)}
 ${
   !data.work_progress.wireless.status
     ? "<b>Non ci sono dati disponibili per l'FWA.</b>"
-    : `<b>FWA</b>
+    : `<b>FWA</b>  📡
 
 Stato lavori: <b>${data.work_progress.wireless.status}</b>
 Tipo di intervento: ${data.intervento.wireless || unavailable}

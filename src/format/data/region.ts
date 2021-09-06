@@ -17,7 +17,7 @@ const _formatRegionWorkStatus = (status: RegionWorkStatus) =>
 
 export const formatRegionFiber = (data: BulRegionApi) => `${_formatRegion(data)}
 
-<b>Fibra ottica</b>
+<b>Fibra ottica</b>  🌐
 
 Intervento diretto:
   Città pianificate: ${data.intervento.diretto.fiber}
@@ -33,7 +33,7 @@ ${_formatRegionWorkStatus(data.work_progress.concessione.fiber.status)}`;
 
 export const formatRegionFwa = (data: BulRegionApi) => `${_formatRegion(data)}
 
-<b>FWA</b>
+<b>FWA</b>  📡
 
 Intervento diretto:
   Città pianificate: ${data.intervento.diretto.wireless}
