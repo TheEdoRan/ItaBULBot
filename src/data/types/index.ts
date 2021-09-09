@@ -14,6 +14,6 @@ export interface City {
 export type CityRegionLevel = "city" | "region";
 export type FiberFwa = "fiber" | "fwa";
 
-export interface CityAndOf extends BulCityApi {
+export interface BulCityAndOf extends BulCityApi {
   of?: OfCityApi;
 }

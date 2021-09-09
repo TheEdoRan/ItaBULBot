@@ -14,7 +14,7 @@ import type {
   AvtNumber,
   BulEgonDataApi,
 } from "../api/types";
-import type { City, CityAndOf, CityRegionLevel } from "./types";
+import type { City, BulCityAndOf, CityRegionLevel } from "./types";
 
 // Memo expiration: 6 hours.
 const memoExpiration = 21600 * 1000;
@@ -34,7 +34,7 @@ export class Fetch {
   static async data(
     level: CityRegionLevel,
     id: string
-  ): Promise<CityAndOf | BulRegionApi> {
+  ): Promise<BulCityAndOf | BulRegionApi> {
     const { data }: AxiosResponse<BulCityApi | BulRegionApi> = await bulApi(
       `/opendata?format=json&level=${level}&id=${id}`
     );
@@ -45,7 +45,7 @@ export class Fetch {
     }
 
     // City level.
-    const cityData = data as CityAndOf;
+    const cityData = data as BulCityAndOf;
     const { city_name: cityName, province_id: provId } = cityData;
 
     try {

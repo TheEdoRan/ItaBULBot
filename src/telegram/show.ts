@@ -2,7 +2,7 @@ import { Context, Markup } from "telegraf";
 import type { Update } from "typegram";
 
 import type { BotActionContext } from "./types";
-import type { CityAndOf, FiberFwa } from "../data/types";
+import type { BulCityAndOf, FiberFwa } from "../data/types";
 import { editMessage, editMessageWithError } from "./utils";
 import { insertAtIndex } from "../utils";
 import { Fetch } from "../data/fetch";
@@ -45,7 +45,7 @@ export const showFiberData = async (ctx: BotActionContext) => {
 
     // City level.
     if (level === "city") {
-      const cityData = data as CityAndOf;
+      const cityData = data as BulCityAndOf;
 
       if (!!cityData.pcn) {
         buttons[0][1] = PcnButton(id, "fiber");
@@ -78,7 +78,7 @@ export const showFwaData = async (ctx: BotActionContext) => {
 
     // City level.
     if (level === "city") {
-      const cityData = data as CityAndOf;
+      const cityData = data as BulCityAndOf;
 
       if (!!cityData.pcn) {
         buttons[0][1] = PcnButton(id, "fwa");
@@ -105,7 +105,7 @@ export const showPcnData = async (ctx: BotActionContext) => {
     const { pcn: pcnData, city_name: cityName } = (await Fetch.data(
       "city",
       cityId
-    )) as CityAndOf;
+    )) as BulCityAndOf;
     const pcnCityId = pcnData!.sede_id;
     const { features: pcnFeatures } = await Fetch.pcnData(pcnCityId);
 

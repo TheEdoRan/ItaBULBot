@@ -1,8 +1,8 @@
-import type { CityAndOf } from "../../data/types";
+import type { BulCityAndOf } from "../../data/types";
 import type { OperationDates } from "../../api/types";
 import { unavailable } from ".";
 
-const _formatCity = (data: CityAndOf) => `<b>${data.city_name}</b>
+const _formatCity = (data: BulCityAndOf) => `<b>${data.city_name}</b>
 
 Unità immobiliari totali: ${data.people_data.houses}
 
@@ -20,7 +20,7 @@ const _formatCityFiberFwaDates = (dates: OperationDates) => `Previsioni:
   Chiusura lavori: ${dates.data_prevista_chiusura_lavori || unavailable}
   Operatività: ${dates.data_prevista_operativita || unavailable}`;
 
-export const formatCityFiber = (data: CityAndOf) => `${_formatCity(data)}
+export const formatCityFiber = (data: BulCityAndOf) => `${_formatCity(data)}
 
 ${
   !data.work_progress.fiber.status
@@ -47,7 +47,7 @@ Fornitore DL/CSE: ${data.of.fornitore_dl_cse_ftth || unavailable}`
 ${_formatCityFiberFwaDates(data.work_progress.fiber.dates)}`
 }`;
 
-export const formatCityFwa = (data: CityAndOf) => `${_formatCity(data)}
+export const formatCityFwa = (data: BulCityAndOf) => `${_formatCity(data)}
 
 ${
   !data.work_progress.wireless.status
