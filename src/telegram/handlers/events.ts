@@ -12,8 +12,8 @@ export const handleEvents = (bot: Telegraf<Context<Update>>) => {
       ctx.inlineQuery.query
     );
 
-    // Cache results for 1 hour.
-    let msgExtra: ExtraAnswerInlineQuery = { cache_time: 3600 };
+    // Cache inline results for 6 hours.
+    let msgExtra: ExtraAnswerInlineQuery = { cache_time: 21600 };
 
     if (addressHowTo) {
       msgExtra = {

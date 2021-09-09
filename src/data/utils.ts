@@ -72,7 +72,7 @@ export const buildInlineResults = async (
           return buildInlineResult(
             `address_${getCityIdFromName(
               city
-            )}_${streetId}_${number}${exponentString}`,
+            )}_${streetId}_${province}_${number}${exponentString}`,
             `${street}, ${number}${exponentString}`,
             `${city} (${province})`
           );

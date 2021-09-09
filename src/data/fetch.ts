@@ -99,11 +99,17 @@ export class Fetch {
       `/getCivic/?q=${encodedNumber}&idvia=${streetId}`
     );
 
-    const numberData = data.resp.find((c) => c.toponomastico === number);
+    // Check if which "toponomastico" element is equal to this number.
+    // If not found, try to find house number without exponent (e.g. 13/L -> 13).
+    const numberData =
+      data.resp.find((c) => c.toponomastico === number) ||
+      data.resp.find((c) => number.includes(c.toponomastico));
 
     // If no data found for this house number, throw a new error.
     if (!numberData) {
-      throw new Error();
+      throw new Error(
+        "numberInfo: Could not fetch data for this house number."
+      );
     }
 
     // Otherwise return data.

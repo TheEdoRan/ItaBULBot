@@ -138,29 +138,34 @@ export const showPcnData = async (ctx: BotActionContext) => {
 
 export const showAddressData = async (ctx: Context<Update>) => {
   // Get info from result id.
-  const [cityId, streetId, number] = ctx
-    .chosenInlineResult!.result_id.match(/^address_(\d+)_(\d+)_(.+)$/)!
+  const [cityId, streetId, province, number] = ctx
+    .chosenInlineResult!.result_id.match(/^address_(\d+)_(\d+)_(.+)_(.+)$/)!
     .slice(1);
 
   try {
     // Get egonId from API.
     const { IdCivico: egonId } = await Fetch.numberInfo(streetId, number);
 
-    // If egon id not found, reply with an error.
-    if (!egonId) {
-      return editMessage(ctx, formatAddressNotFound());
-    }
-
-    // Otherwise, fetch info for this egon.
+    // Fetch info for this egon.
     const data = await Fetch.egonData(cityId, egonId);
     // Get region id from city id, for BUL website button.
     const regionId = getRegionIdFromCityId(cityId)!;
 
     const buttons = [[BulButton({ regionId, cityId, egonId }, "address")]];
 
-    editMessage(ctx, formatAddress(data), Markup.inlineKeyboard(buttons));
+    editMessage(
+      ctx,
+      formatAddress(data, province),
+      Markup.inlineKeyboard(buttons)
+    );
   } catch (e: any) {
     console.error(`showAddressData error: ${e?.message}`);
-    editMessageWithError(ctx);
+    if (
+      e?.message === "numberInfo: Could not fetch data for this house number."
+    ) {
+      return editMessage(ctx, formatAddressNotFound(), undefined, false);
+    } else {
+      editMessageWithError(ctx);
+    }
   }
 };

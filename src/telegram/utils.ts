@@ -41,14 +41,14 @@ export const editMessageWithError = (ctx: Context) =>
 
 // Custom ctx.editMessageText function, with sensible extra options and optional
 // inline keyboard.
-// If
 export const editMessage = async (
   ctx: Context,
   text: string,
-  inlineKeyboard?: Markup.Markup<InlineKeyboardMarkup>
+  inlineKeyboard?: Markup.Markup<InlineKeyboardMarkup>,
+  latestUpdate: boolean = true
 ) => {
   ctx
-    .editMessageText(`${text}${await showLatestUpdate()}`, {
+    .editMessageText(`${text}${latestUpdate ? await showLatestUpdate() : ""}`, {
       ...baseExtraOpts,
       reply_markup: inlineKeyboard?.reply_markup,
     })

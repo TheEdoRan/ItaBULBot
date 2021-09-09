@@ -1,7 +1,7 @@
 import type { BulEgonDataApi } from "../../api/types";
 
 export const formatAddressNotFound = () =>
-  "❌  <i>Numero civico non trovato.</i>";
+  "❌  <i>Nessun dato trovato per questo numero civico.</i>";
 
 const _getAddressCoveragePosition = (key: string) => {
   if (key.endsWith("_num_fo")) {
@@ -69,9 +69,9 @@ const _formatAddressCoverage = (data: BulEgonDataApi) => {
   return msg;
 };
 
-export const formatAddress = (data: BulEgonDataApi) => `<b>${
+export const formatAddress = (data: BulEgonDataApi, province: string) => `<b>${
   data.indirizzo_compl
-}</b>, <i>${data.comune}</i>
+}</b> - <i>${data.comune} (${province})</i>
 
 Tipologia civico: <b>${data.tipologia_civico_22}</b>
 
