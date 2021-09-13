@@ -25,7 +25,7 @@
   "homepage": "https://github.com/theedoran/itabulbot#readme",
   "dependencies": {
     "axios": "^0.21.3",
-    "dayjs": "^1.10.6",
+    "dayjs": "^1.10.7",
     "dotenv": "^10.0.0",
     "escape-html": "^1.0.3",
     "telegraf": "^4.4.1",
