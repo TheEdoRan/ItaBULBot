@@ -35,6 +35,6 @@
     "@types/escape-html": "^1.0.1",
     "@types/node": "^16.7.10",
     "ts-node-dev": "^1.1.8",
-    "typescript": "^4.4.2"
+    "typescript": "^4.4.3"
   }
 }
