@@ -55,11 +55,14 @@ export class Fetch {
       ).data.data.find((city: City) => city.name === cityName).id;
 
       const ofCityData: OfCityApi = (await ofApi(`/site/${ofCityId}`)).data;
-      // OF fetch failed, don't put OF data in return object.
+
+      // OF fetch successful, put OF data in return object.
       return {
         ...cityData,
         of: ofCityData,
       };
+      
+      // OF fetch failed, just return BUL data.
     } catch (_) {
       return cityData;
     }
@@ -99,7 +102,7 @@ export class Fetch {
       `/getCivic/?q=${encodedNumber}&idvia=${streetId}`
     );
 
-    // Check if which "toponomastico" element is equal to this number.
+    // Check which "toponomastico" element is equal to this house number.
     // If not found, try to find house number without exponent (e.g. 13/L -> 13).
     const numberData =
       data.resp.find((c) => c.toponomastico === number) ||
