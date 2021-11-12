@@ -2,19 +2,19 @@ import { AxiosResponse } from "axios";
 import { MemoizeExpiring } from "typescript-memoize";
 import { avtApi, bulApi, ofApi } from "../api";
 import type {
+  AvtNumber,
+  AvtNumberApi,
   AvtSearchApi,
   AvtSearchInfo,
   BulCityApi,
-  BulLatestImport,
-  BulRegionApi,
-  BulPcnApi,
-  OfProvinceApi,
-  OfCityApi,
-  AvtNumberApi,
-  AvtNumber,
   BulEgonDataApi,
+  BulLatestImport,
+  BulPcnApi,
+  BulRegionApi,
+  OfCityApi,
+  OfProvinceApi,
 } from "../api/types";
-import type { City, BulCityAndOf, CityRegionLevel } from "./types";
+import type { BulCityAndOf, City, CityRegionLevel } from "./types";
 
 // Memo expiration: 6 hours.
 const memoExpiration = 21600 * 1000;
@@ -61,7 +61,7 @@ export class Fetch {
         ...cityData,
         of: ofCityData,
       };
-      
+
       // OF fetch failed, just return BUL data.
     } catch (_) {
       return cityData;
@@ -125,7 +125,7 @@ export class Fetch {
     egonId: string
   ): Promise<BulEgonDataApi> {
     const { data }: AxiosResponse<BulEgonDataApi> = await bulApi(
-      `/address-info/${cityId}/${egonId}`
+      `/address-info/${egonId}`
     );
 
     return data;

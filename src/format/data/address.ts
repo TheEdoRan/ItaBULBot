@@ -3,77 +3,33 @@ import type { BulEgonDataApi } from "../../api/types";
 export const formatAddressNotFound = () =>
   "❌  <i>Nessun dato trovato per questo numero civico.</i>";
 
-const _getAddressCoveragePosition = (key: string) => {
-  if (key.endsWith("_num_fo")) {
-    return 0;
+const _getWorkType = (workType: string) => {
+  switch (workType) {
+    case "A":
+      return "Area Grigia/Nera - Operatore privato";
+    case "B":
+      return "Area Grigia/Nera - Prossimo intervento pubblico";
+    case "C":
+      return "Area Bianca - Intervento pubblico in corso";
+    default:
+      return "";
   }
-
-  if (key.endsWith("_rame")) {
-    return 1;
-  }
-
-  if (key.endsWith("_num_fwa_vhcn")) {
-    return 2;
-  }
-
-  if (key.endsWith("_num_fwa_no_vhcn")) {
-    return 3;
-  }
-};
-
-const _getAddressCoverageName = (position: number) => {
-  switch (position) {
-    case 0:
-      return "FTTH/FTTB";
-    case 1:
-      return "FTTC";
-    case 2:
-      return "FWA VHCN";
-    case 3:
-      return "FWA no VHCN";
-  }
-};
-
-const _formatAddressCoverage = (data: BulEgonDataApi) => {
-  let years: { [key: string]: number[] } = {};
-
-  Object.keys(data).map((k) => {
-    const coverageMatch = k.match(/^a(\d{2})(.+)$/)?.slice(1);
-
-    if (coverageMatch) {
-      let [year, rest] = coverageMatch;
-      year = `20${year}`;
-      const position = _getAddressCoveragePosition(rest)!;
-
-      years[year] = years[year] || [];
-
-      // @ts-ignore
-      years[year][position] = data[k];
-    }
-  });
-
-  const msg = Object.entries(years)
-    .map(([year, coverages]) => {
-      let yearText = `  <b>${year}</b>\n`;
-      yearText += coverages
-        .map(
-          (value, pos) =>
-            `    ${_getAddressCoverageName(pos)}: <b>${value}</b>\n`
-        )
-        .join("");
-
-      return yearText;
-    })
-    .join("\n");
-
-  return msg;
 };
 
 export const formatAddress = (data: BulEgonDataApi, province: string) => `<b>${
   data.indirizzo_compl
 }</b> - <i>${data.comune} (${province})</i>
 
-Tipologia civico: <b>${data.tipologia_civico_22}</b>
+Tipologia civico:
+  <b>${_getWorkType(data.tipo_intervento)}</b>
 
-Coperture private:
-${_formatAddressCoverage(data).replace(/\n.*$/, "")}`;
+Numero operatori privati attivi al 2021:
+  <code>${
+    data.operatori_fibra || "0"
+  }</code>  1 Gbit/s Fibra Ottica - <b>FTTH/FTTB</b>
+  <code>${
+    data.operatori_rame_100_200 || "0"
+  }</code>  100 Mbit/s - 200 Mbit/s - <b>FTTC</b>
+  <code>${
+    data.operatori_rame_30_100 || "0"
+  }</code>  30 Mbit/s - 100 Mbit/s - <b>FTTC</b>`;

@@ -1,13 +1,15 @@
 import { Context, Markup } from "telegraf";
 import type { Update } from "typegram";
-
-import type { BotActionContext } from "./types";
-import type { BulCityAndOf, FiberFwa } from "../data/types";
-import { editMessage, editMessageWithError } from "./utils";
-import { insertAtIndex } from "../utils";
+import { BulRegionApi } from "../api/types";
 import { Fetch } from "../data/fetch";
+import type { BulCityAndOf, FiberFwa } from "../data/types";
 import { getLevel, getRegionIdFromCityId } from "../data/utils";
 import { formatLatestUpdate, formatLatestUpdateError } from "../format/data";
+import { formatAddress, formatAddressNotFound } from "../format/data/address";
+import { formatCityFiber, formatCityFwa } from "../format/data/city";
+import { formatPcnData } from "../format/data/pcn";
+import { formatRegionFiber, formatRegionFwa } from "../format/data/region";
+import { insertAtIndex } from "../utils";
 import {
   BulButton,
   FiberButton,
@@ -16,11 +18,8 @@ import {
   PcnButton,
   PcnLocalizeButton,
 } from "./buttons";
-import { formatCityFiber, formatCityFwa } from "../format/data/city";
-import { formatPcnData } from "../format/data/pcn";
-import { BulRegionApi } from "../api/types";
-import { formatRegionFiber, formatRegionFwa } from "../format/data/region";
-import { formatAddress, formatAddressNotFound } from "../format/data/address";
+import type { BotActionContext } from "./types";
+import { editMessage, editMessageWithError } from "./utils";
 
 export const showLatestUpdate = async () => {
   try {
