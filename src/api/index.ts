@@ -1,6 +1,6 @@
+import axios from "axios";
 import crypto from "crypto";
 import https from "https";
-import axios from "axios";
 
 // Open Fiber utils
 const OF_SECRET = "6Yk9SPasgejjkapLJ5EkZwBhxFY8eLGLbBaqkfY8ymtFsaJr";
@@ -55,7 +55,7 @@ export const avtApi = (endpoint: string) =>
       "accept-encoding": "gzip, deflate, br",
       "accept-language": "it-IT,it;q=0.9,en-US;q=0.8,en;q=0.7",
       connection: "keep-alive",
-      DNT: 1,
+      DNT: "1",
       host: "www.fastweb.it",
       referer: "https://www.fastweb.it/AVT/Start/?layout=standalone&modal",
       "sec-fetch-dest": "empty",
