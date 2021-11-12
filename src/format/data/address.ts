@@ -22,7 +22,13 @@ export const formatAddress = (data: BulEgonDataApi, province: string) => `<b>${
 
 Tipologia civico:
   <b>${_getWorkType(data.tipo_intervento)}</b>
-
+${
+  data.anno_intervento_a
+    ? `
+Copertura prevista per l'anno: <b>${data.anno_intervento_a}</b>
+`
+    : ""
+}
 Numero operatori privati attivi al 2021:
   <code>${
     data.operatori_fibra || "0"
