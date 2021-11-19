@@ -147,6 +147,12 @@ export const showAddressData = async (ctx: Context<Update>) => {
 
     // Fetch info for this egon.
     const data = await Fetch.egonData(cityId, egonId);
+
+    // If BUL API crashes somehow.
+    if (!data.id_egon) {
+      throw new Error("invalid response from BUL API");
+    }
+
     // Get region id from city id, for BUL website button.
     const regionId = getRegionIdFromCityId(cityId)!;
 
