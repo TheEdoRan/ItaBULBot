@@ -11,10 +11,13 @@ jobs:
     name: Deploy bot
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: superfly/flyctl-actions@1.1
+      - name: Check out repo
+        uses: actions/checkout@v2
+      - name: Deploy
+        uses: superfly/flyctl-actions@1.1
         with:
           args: "deploy --detach"
-      - uses: superfly/flyctl-actions@1.1
+      - name: Restart
+        uses: superfly/flyctl-actions@1.1
         with:
           args: "restart itabulbot"
