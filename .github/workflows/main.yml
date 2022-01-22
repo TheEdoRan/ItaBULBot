@@ -17,7 +17,11 @@ jobs:
         uses: superfly/flyctl-actions@1.1
         with:
           args: "deploy --detach"
-      - name: Restart
+      - name: Suspend
         uses: superfly/flyctl-actions@1.1
         with:
-          args: "restart itabulbot"
+          args: "suspend itabulbot"
+      - name: Resume
+        uses: superfly/flyctl-actions@1.1
+        with:
+          args: "resume itabulbot"
