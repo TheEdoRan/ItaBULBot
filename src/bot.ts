@@ -1,10 +1,10 @@
 import "dotenv/config";
+import http from "http";
 import { Telegraf } from "telegraf";
-
 import {
+  handleActions,
   handleCommands,
   handleEvents,
-  handleActions,
 } from "./telegram/handlers";
 import { logger } from "./telegram/logger";
 
@@ -31,3 +31,11 @@ bot.launch();
 // Graceful stop.
 process.once("SIGINT", () => bot.stop("SIGINT"));
 process.once("SIGTERM", () => bot.stop("SIGTERM"));
+
+// Healthcheck for fly.
+http
+  .createServer((req, res) => {
+    res.writeHead(200);
+    res.end("ok");
+  })
+  .listen(8080);
