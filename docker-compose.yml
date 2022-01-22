@@ -1,9 +1,0 @@
-version: "3.9"
-
-services:
-  itabulbot:
-    container_name: itabulbot
-    image: theedoran/itabulbot:latest
-    env_file: .env
-    init: true
-    restart: unless-stopped
