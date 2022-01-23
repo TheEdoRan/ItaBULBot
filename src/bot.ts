@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { createServer } from "http";
 import { Telegraf } from "telegraf";
 import {
   handleActions,
@@ -24,18 +25,14 @@ handleEvents(bot);
 // Action handlers.
 handleActions(bot);
 
-// Launch bot.
-if (process.env.NODE_ENV === "production") {
-  bot.launch({
-    webhook: {
-      domain: process.env.WEBHOOK_URL as string,
-      port: 8080,
-    },
-  });
-} else {
-  bot.launch();
-}
+bot.launch();
 
 // Graceful stop.
 process.once("SIGINT", () => bot.stop("SIGINT"));
 process.once("SIGTERM", () => bot.stop("SIGTERM"));
+
+// fly healthcheck.
+createServer((_, res) => {
+  res.writeHead(200);
+  res.end("ok");
+}).listen(8080);
