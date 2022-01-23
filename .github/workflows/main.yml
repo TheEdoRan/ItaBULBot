@@ -13,15 +13,7 @@ jobs:
     steps:
       - name: Check out repo
         uses: actions/checkout@v2
-      - name: Deploy
+      - name: Deploy bot
         uses: superfly/flyctl-actions@1.1
         with:
           args: "deploy --detach"
-      - name: Suspend
-        uses: superfly/flyctl-actions@1.1
-        with:
-          args: "suspend itabulbot"
-      - name: Resume
-        uses: superfly/flyctl-actions@1.1
-        with:
-          args: "resume itabulbot"
