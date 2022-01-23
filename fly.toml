@@ -30,10 +30,6 @@ processes = []
     handlers = ["tls", "http"]
     port = "443"
 
-  [[services.ports]]
-    handlers = ["tls", "http"]
-    port = "8443"
-
   [services.concurrency]
     hard_limit = 25
     soft_limit = 20
