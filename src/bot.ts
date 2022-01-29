@@ -12,17 +12,11 @@ const bot = new Telegraf(process.env.BOT_TOKEN as string);
 
 // Only for debugging purposes.
 if (process.env.DEBUG === "true") {
-  // Logging middleware.
   bot.use(logger());
 }
 
-// Command handlers.
 handleCommands(bot);
-
-// Event handlers.
 handleEvents(bot);
-
-// Action handlers.
 handleActions(bot);
 
 bot.launch();
