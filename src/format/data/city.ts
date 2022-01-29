@@ -37,7 +37,7 @@ ${
     : `Unità immobiliari: ${data.of.ui_ftth || unavailable}
 PAC/PAL: ${data.of.pac_pal.slice(0, -2) || unavailable}
 Importo OdE: ${
-        data.of.importo_ode_ftth
+        data.of.importo_ode_ftth && data.of.importo_ode_ftth !== "nan"
           ? data.of.importo_ode_ftth.trim() + " €"
           : unavailable
       }
@@ -64,7 +64,7 @@ ${
     : `Unità immobiliari: ${data.of.ui_fwa || unavailable}
 PAC/PAL: ${data.of.pac_pal.slice(0, -2) || unavailable}
 Importo OdE: ${
-        data.of.importo_ode_fwa
+        data.of.importo_ode_fwa && data.of.importo_ode_fwa !== "nan"
           ? data.of.importo_ode_fwa.trim() + " €"
           : unavailable
       }
