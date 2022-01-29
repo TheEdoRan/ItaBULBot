@@ -11,7 +11,7 @@ import { logger } from "./telegram/logger";
 const bot = new Telegraf(process.env.BOT_TOKEN as string);
 
 // Only for debugging purposes.
-if (process.env.DEBUG) {
+if (process.env.DEBUG === "true") {
   // Logging middleware.
   bot.use(logger());
 }
@@ -27,12 +27,19 @@ handleActions(bot);
 
 bot.launch();
 
-// Graceful stop.
-process.once("SIGINT", () => bot.stop("SIGINT"));
-process.once("SIGTERM", () => bot.stop("SIGTERM"));
-
 // fly healthcheck.
-createServer((_, res) => {
+const server = createServer((_, res) => {
   res.writeHead(200);
   res.end("ok");
 }).listen(8080);
+
+// Graceful stop.
+process.once("SIGINT", () => {
+  bot.stop("SIGINT");
+  server.close();
+});
+
+process.once("SIGTERM", () => {
+  bot.stop("SIGTERM");
+  server.close();
+});

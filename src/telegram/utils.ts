@@ -1,10 +1,9 @@
 import type { Context, Markup } from "telegraf";
-import type { InlineKeyboardMarkup } from "typegram";
 import type {
   ExtraEditMessageText,
   ExtraReplyMessage,
 } from "telegraf/typings/telegram-types";
-
+import type { InlineKeyboardMarkup } from "typegram";
 import { showLatestUpdate } from "./show";
 
 const baseExtraOpts: ExtraReplyMessage & ExtraEditMessageText = {
@@ -34,7 +33,7 @@ export const replyToMessage = (
 export const editMessageWithError = (ctx: Context) =>
   ctx
     .editMessageText(
-      "😕  <i>Qualcosa è andato storto nell'eseguire l'operazione.</i>",
+      "😕  <i>Qualcosa è andato storto nell'eseguire l'operazione.</i>\n\nATTENZIONE: questo errore quasi sicuramente non dipende dal bot, bensì è molto probabile che ci sia una temporanea indisponibilità dei servizi che il bot utilizza per mostrare le informazioni (BUL, Open Fiber, Fastweb AVT).",
       baseExtraOpts
     )
     .catch(() => {});

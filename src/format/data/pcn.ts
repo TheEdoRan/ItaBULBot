@@ -1,4 +1,4 @@
-import type { BulPcnApi, CityPcnInfo } from "../../api/types";
+import type { CityPcnInfo } from "../../api/types";
 
 export const formatPcnData = (data: CityPcnInfo, cityName: string) => {
   return `Informazioni <a href=\"https://fibra.click/riconoscere-rete-bul/#pcn-centrali\">PCN</a> per <b>${cityName}</b>:
@@ -12,5 +12,5 @@ ${
     ? ""
     : `
 ⚠️ Il comune risulta al momento servito da temporaneo <a href="https://fibra.click/riconoscere-rete-bul/#mini-pcn">mini PCN</a>.`
-}`;
+}`.trim();
 };
