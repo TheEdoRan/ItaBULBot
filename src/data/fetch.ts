@@ -1,5 +1,5 @@
 import { AxiosResponse } from "axios";
-import { MemoizeExpiring } from "typescript-memoize";
+import { Memoize } from "typescript-memoize";
 import { avtApi, bulApi, ofApi } from "../api";
 import type {
   AvtNumber,
@@ -16,21 +16,24 @@ import type {
 } from "../api/types";
 import type { BulCityAndOf, City, CityRegionLevel } from "./types";
 
-// Memo expiration: 6 hours.
-const memoExpiration = 21600 * 1000;
+const memoOpts: Parameters<typeof Memoize>[0] = {
+  // Memo expiration: 6 hours.
+  expiring: 21600 * 1000,
+  tags: ["data"],
+};
 
 export class Fetch {
   // Get latest update from BUL API.
-  @MemoizeExpiring(memoExpiration)
+  @Memoize(memoOpts)
   static async latestUpdate(): Promise<BulLatestImport> {
     return (await bulApi("/latest-import")).data;
   }
 
   // Get data from BUL and OF APIs.
-  @MemoizeExpiring(
-    memoExpiration,
-    (level: CityRegionLevel, id: number) => `${level}~${id}`
-  )
+  @Memoize({
+    ...(memoOpts as object),
+    hashFunction: (level: CityRegionLevel, id: number) => `${level}~${id}`,
+  })
   static async data(
     level: CityRegionLevel,
     id: string
@@ -69,7 +72,7 @@ export class Fetch {
   }
 
   // Get PCN data from API.
-  @MemoizeExpiring(memoExpiration)
+  @Memoize(memoOpts)
   static async pcnData(cityId: string): Promise<BulPcnApi> {
     let { data }: AxiosResponse<BulPcnApi> = await bulApi(
       `/shelters?cities=${cityId}`
@@ -120,10 +123,7 @@ export class Fetch {
   }
 
   // Get EGON data from API.
-  static async egonData(
-    cityId: string,
-    egonId: string
-  ): Promise<BulEgonDataApi> {
+  static async egonData(egonId: string): Promise<BulEgonDataApi> {
     const { data }: AxiosResponse<BulEgonDataApi> = await bulApi(
       `/address-info/${egonId}`
     );

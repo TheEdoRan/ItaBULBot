@@ -1,5 +1,6 @@
 import { Context, Markup } from "telegraf";
 import type { Update } from "typegram";
+import { clear } from "typescript-memoize";
 import { BulRegionApi } from "../api/types";
 import { Fetch } from "../data/fetch";
 import type { BulCityAndOf, FiberFwa } from "../data/types";
@@ -26,6 +27,7 @@ export const showLatestUpdate = async () => {
     const date = await Fetch.latestUpdate();
     return formatLatestUpdate(date.ws.date);
   } catch (e: any) {
+    clear(["data"]);
     console.error(`showLatestUpdate error: ${e?.message}`);
     return formatLatestUpdateError();
   }
@@ -59,6 +61,7 @@ export const showFiberData = async (ctx: BotActionContext) => {
 
     editMessage(ctx, message, Markup.inlineKeyboard(buttons));
   } catch (e: any) {
+    clear(["data"]);
     console.error(`showFiberData error: ${e?.message}`);
     editMessageWithError(ctx);
   }
@@ -92,6 +95,7 @@ export const showFwaData = async (ctx: BotActionContext) => {
 
     editMessage(ctx, message, Markup.inlineKeyboard(buttons));
   } catch (e: any) {
+    clear(["data"]);
     console.error(`showFwaData error: ${e?.message}`);
     editMessageWithError(ctx);
   }
@@ -130,6 +134,7 @@ export const showPcnData = async (ctx: BotActionContext) => {
       Markup.inlineKeyboard(buttons)
     );
   } catch (e: any) {
+    clear(["data"]);
     console.error(`showPcnData error: ${e?.message}`);
     editMessageWithError(ctx);
   }
@@ -146,7 +151,7 @@ export const showAddressData = async (ctx: Context<Update>) => {
     const { IdCivico: egonId } = await Fetch.numberInfo(streetId, number);
 
     // Fetch info for this egon.
-    const data = await Fetch.egonData(cityId, egonId);
+    const data = await Fetch.egonData(egonId);
 
     // If BUL API crashes somehow.
     if (!data.id_egon) {
