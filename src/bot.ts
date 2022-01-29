@@ -31,7 +31,9 @@ bot.launch();
 const server = createServer((_, res) => {
   res.writeHead(200);
   res.end("ok");
-}).listen(8080);
+});
+
+server.listen(8080);
 
 // Graceful stop.
 process.once("SIGINT", () => {
