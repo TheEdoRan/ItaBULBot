@@ -2,6 +2,8 @@
 
 ## [@ItaBULBot](http://telegram.me/itabulbot)
 
+**Attenzione: questo non è un bot ufficiale.**
+
 Sentivo **enormemente** la mancanza di un bot di questo tipo su Telegram.
 
 Per fortuna, qualche tempo fa, il [sito BUL](http://bandaultralarga.italia.it)
@@ -41,4 +43,3 @@ Basterà, in questo caso, scrivere in qualsiasi chat un indirizzo compreso di nu
   OpenFiber.
 - [Telegraf](https://github.com/telegraf/telegraf), il framework utilizzato
   per il bot.
-- As always, VS Code and (Neo)VIM. ❤️
