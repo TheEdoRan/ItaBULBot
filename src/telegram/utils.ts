@@ -33,7 +33,7 @@ export const replyToMessage = (
 export const editMessageWithError = (ctx: Context) =>
   ctx
     .editMessageText(
-      "😕  <i>Qualcosa è andato storto nell'eseguire l'operazione.</i>\n\nATTENZIONE: questo errore quasi sicuramente non dipende dal bot, bensì è molto probabile che ci sia una temporanea indisponibilità dei servizi che il bot utilizza per mostrare le informazioni (BUL, Open Fiber, Fastweb AVT).",
+      "😕  <i>Qualcosa è andato storto nell'eseguire l'operazione.</i>\n\n❗ <b>ATTENZIONE</b> ❗️\n\n<b>L'errore quasi sicuramente non dipende da questo bot.</b>\n\nÈ molto probabile sia stato generato dalla temporanea indisponibilità di uno dei servizi che il bot utilizza per mostrare le informazioni:\n<b>BUL</b> e <b>Open Fiber</b> per i comuni e le regioni, <b>Fastweb AVT</b> per la ricerca degli indirizzi.",
       baseExtraOpts
     )
     .catch(() => {});
