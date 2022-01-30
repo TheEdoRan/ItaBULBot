@@ -1,5 +1,5 @@
 # Build stage
-FROM node:14-alpine AS builder
+FROM node:16-alpine AS builder
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm ci
@@ -7,8 +7,8 @@ COPY tsconfig.json ./
 COPY src src
 RUN npm run build
 
-# Launch
-FROM node:14-alpine
+# Run
+FROM node:16-alpine AS runner
 ENV NODE_ENV=production
 WORKDIR /usr/src/app
 RUN chown node:node .
