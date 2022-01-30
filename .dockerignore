@@ -2,3 +2,20 @@ node_modules
 npm-debug.log
 .env
 dist
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+node_modules
+yarn.lock
+dist
+.env*
+.npmrc
+
+# ESLint
+.eslintcache
+
+# TypeScript stuff
+tsconfig.tsbuildinfo
