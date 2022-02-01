@@ -7,8 +7,6 @@
 		"fetch": "ts-node-dev ./fetch.js",
 		"dev": "ts-node-dev --rs ./src/bot.ts",
 		"compile": "tsc",
-		"migrate": "prisma migrate dev",
-		"studio": "prisma studio",
 		"commitlint": "commitlint",
 		"typecheck": "tsc --noemit",
 		"lint": "npm run typecheck && eslint . --ext .js,.ts --no-cache",
