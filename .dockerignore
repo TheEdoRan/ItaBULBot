@@ -9,7 +9,6 @@ dist
 .LSOverride
 
 node_modules
-.husky
 .vscode
 yarn.lock
 dist

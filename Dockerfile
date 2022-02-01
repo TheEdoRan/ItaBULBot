@@ -14,7 +14,7 @@ WORKDIR /usr/src/app
 RUN chown node:node .
 USER node
 COPY --chown=node:node package*.json ./
-RUN npm ci
+RUN npm ci --ignore-scripts
 COPY --chown=node:node --from=builder /usr/src/app/dist/ .
 EXPOSE 8080
 CMD ["node", "bot.js"]
