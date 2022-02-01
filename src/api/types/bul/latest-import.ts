@@ -1,10 +1,10 @@
 interface Type {
-  status: string;
-  date: string;
+	status: string;
+	date: string;
 }
 
 export interface BulLatestImport {
-  ws: Type;
-  csv: Type;
-  work_status: Type;
+	ws: Type;
+	csv: Type;
+	work_status: Type;
 }

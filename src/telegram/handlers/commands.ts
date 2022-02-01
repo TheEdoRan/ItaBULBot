@@ -1,50 +1,53 @@
-import type { Telegraf, Context } from "telegraf";
-import type { Update } from "typegram";
 import { Markup } from "telegraf";
 
-import { replyToMessage } from "../utils";
 import { startHelpCommand, addressCommand } from "../../format/commands";
 import { StartHelpButton } from "../buttons";
+import { replyToMessage } from "../utils";
+
+import type { Telegraf, Context } from "telegraf";
+import type { Update } from "typegram";
 
 // Private chat only middleware.
 const isPrivateChat = (ctx: Context, next: () => Promise<void>) => {
-  ctx.chat?.type === "private" && next();
+	if (ctx.chat?.type === "private") {
+		next();
+	}
 };
 
 export const handleCommands = (bot: Telegraf<Context<Update>>) => {
-  bot.command(["start", "aiuto"], isPrivateChat, (ctx) => {
-    const firstName = ctx.from.first_name;
+	bot.command(["start", "aiuto"], isPrivateChat, (ctx) => {
+		const firstName = ctx.from.first_name;
 
-    const buttons = [StartHelpButton()];
+		const buttons = [StartHelpButton()];
 
-    // Check if we're redirected here because of an address search.
-    const addressSearch = ctx.message.text.endsWith("address_search");
+		// Check if we're redirected here because of an address search.
+		const addressSearch = ctx.message.text.endsWith("address_search");
 
-    // If so, display the address search message.
-    if (addressSearch) {
-      replyToMessage(
-        ctx,
-        addressCommand(firstName),
-        Markup.inlineKeyboard(buttons)
-      );
-      return;
-    }
+		// If so, display the address search message.
+		if (addressSearch) {
+			replyToMessage(
+				ctx,
+				addressCommand(firstName),
+				Markup.inlineKeyboard(buttons)
+			);
+			return;
+		}
 
-    // Otherwise, display the standard show/help message.
-    replyToMessage(
-      ctx,
-      startHelpCommand(firstName),
-      Markup.inlineKeyboard(buttons)
-    );
-  });
+		// Otherwise, display the standard show/help message.
+		replyToMessage(
+			ctx,
+			startHelpCommand(firstName),
+			Markup.inlineKeyboard(buttons)
+		);
+	});
 
-  bot.command("indirizzo", isPrivateChat, (ctx) => {
-    const buttons = [StartHelpButton()];
+	bot.command("indirizzo", isPrivateChat, (ctx) => {
+		const buttons = [StartHelpButton()];
 
-    replyToMessage(
-      ctx,
-      addressCommand(ctx.from.first_name),
-      Markup.inlineKeyboard(buttons)
-    );
-  });
+		replyToMessage(
+			ctx,
+			addressCommand(ctx.from.first_name),
+			Markup.inlineKeyboard(buttons)
+		);
+	});
 };

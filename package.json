@@ -1,40 +1,55 @@
 {
-  "name": "itabulbot",
-  "version": "1.0.0",
-  "description": "Bot Telegram per riepilogare lo stato dei lavori del progetto BUL in Italia.",
-  "scripts": {
-    "fetch": "ts-node-dev ./fetch.js",
-    "dev": "ts-node-dev --rs ./src/bot.ts",
-    "build": "tsc"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/theedoran/itabulbot.git"
-  },
-  "keywords": [
-    "telegram",
-    "bot",
-    "bul",
-    "fibra"
-  ],
-  "author": "TheEdoRan",
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/theedoran/itabulbot/issues"
-  },
-  "homepage": "https://github.com/theedoran/itabulbot#readme",
-  "dependencies": {
-    "axios": "^0.25.0",
-    "dayjs": "^1.10.7",
-    "dotenv": "^14.2.0",
-    "escape-html": "^1.0.3",
-    "telegraf": "^4.6.0",
-    "typescript-memoize": "^1.1.0"
-  },
-  "devDependencies": {
-    "@types/escape-html": "^1.0.1",
-    "@types/node": "^17.0.10",
-    "ts-node-dev": "^1.1.8",
-    "typescript": "^4.5.5"
-  }
+	"name": "itabulbot",
+	"version": "1.0.0",
+	"description": "Bot Telegram per riepilogare lo stato dei lavori del progetto BUL in Italia.",
+	"scripts": {
+		"prepare": "husky install",
+		"fetch": "ts-node-dev ./fetch.js",
+		"dev": "ts-node-dev --rs ./src/bot.ts",
+		"compile": "tsc",
+		"migrate": "prisma migrate dev",
+		"studio": "prisma studio",
+		"commitlint": "commitlint",
+		"typecheck": "tsc --noemit",
+		"lint": "npm run typecheck && eslint . --ext .js,.ts --no-cache",
+		"lint:fix": "npm run lint -- --fix",
+		"lint-staged": "lint-staged"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/theedoran/itabulbot.git"
+	},
+	"keywords": [
+		"telegram",
+		"bot",
+		"bul",
+		"fibra"
+	],
+	"author": "TheEdoRan",
+	"license": "GPL-3.0",
+	"bugs": {
+		"url": "https://github.com/theedoran/itabulbot/issues"
+	},
+	"homepage": "https://github.com/theedoran/itabulbot#readme",
+	"dependencies": {
+		"axios": "^0.25.0",
+		"dayjs": "^1.10.7",
+		"dotenv": "^14.2.0",
+		"escape-html": "^1.0.3",
+		"module-alias": "^2.2.2",
+		"telegraf": "^4.6.0",
+		"typescript-memoize": "^1.1.0"
+	},
+	"devDependencies": {
+		"@casterlyapp/eslint-config": "^1.0.14",
+		"@commitlint/cli": "^16.1.0",
+		"@commitlint/config-conventional": "^16.0.0",
+		"@types/escape-html": "^1.0.1",
+		"@types/module-alias": "^2.0.1",
+		"@types/node": "^17.0.10",
+		"husky": "^7.0.4",
+		"lint-staged": "^12.3.2",
+		"ts-node-dev": "^1.1.8",
+		"typescript": "^4.5.5"
+	}
 }

@@ -2,7 +2,7 @@ import escape from "escape-html";
 
 // /start & /aiuto
 export const startHelpCommand = (firstName: string) => `Ciao <b>${escape(
-  firstName
+	firstName
 )}</b> 👋!
 Questo bot ti aiuterà a scoprire qual è lo stato dei lavori di fibra ottica/FWA, finanziati dal progetto <i>BandaUltraLarga</i> (<b>#BUL</b>) in una determinata regione o città, da te scelta.
 
@@ -35,7 +35,7 @@ Puoi contattarmi sia su <a href="https://github.com/theedoran/itabulbot">GitHub<
 
 // /indirizzo
 export const addressCommand = (firstName: string) => `Ciao <b>${escape(
-  firstName
+	firstName
 )}</b> 👋!
 Questo bot supporta anche la ricerca per indirizzo, come presente sul sito <b>BUL</b>.
 
