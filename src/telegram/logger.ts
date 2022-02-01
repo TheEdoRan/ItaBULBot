@@ -1,10 +1,5 @@
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-
 import type { Context, MiddlewareFn } from "telegraf";
 import type { CallbackQuery, Message, Update } from "typegram";
-
-dayjs.extend(utc);
 
 export const logger = (): MiddlewareFn<Context<Update>> => (ctx, next) => {
 	const textMessage = ctx.message as Message.TextMessage;
@@ -38,8 +33,7 @@ export const logger = (): MiddlewareFn<Context<Update>> => (ctx, next) => {
 	const { first_name: firstName, last_name: lastName, username } = ctx.from;
 
 	// User info.
-	let format = `[${dayjs.utc().format("YYYY-MM-DD HH:mm:ss")}] `;
-	format += firstName;
+	let format = firstName;
 	format += lastName ? ` ${lastName}` : "";
 	format += username ? ` [@${username}]` : "";
 	format += ": ";
