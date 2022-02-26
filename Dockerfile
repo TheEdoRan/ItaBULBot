@@ -1,5 +1,5 @@
-# Build stage
-FROM node:16-alpine AS builder
+# Compile
+FROM node:16-alpine AS compiler
 WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm ci
@@ -7,14 +7,18 @@ COPY tsconfig.json ./
 COPY src src
 RUN npm run compile
 
-# Run
-FROM node:16-alpine AS runner
+# Install
+FROM node:16-alpine AS installer
 ENV NODE_ENV=production
 WORKDIR /usr/src/app
-RUN chown node:node .
-USER node
-COPY --chown=node:node package*.json ./
+COPY package*.json ./
 RUN npm ci --ignore-scripts
-COPY --chown=node:node --from=builder /usr/src/app/dist/ .
+COPY --from=compiler /usr/src/app/dist /usr/src/app
+
+# Run
+FROM gcr.io/distroless/nodejs:16 AS runner
+WORKDIR /app
+COPY --from=installer /usr/src/app /app
 EXPOSE 8080
-CMD ["node", "bot.js"]
+USER nonroot:nonroot
+CMD ["bot.js"]
