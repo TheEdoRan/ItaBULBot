@@ -1,18 +1,22 @@
 # Compile
 FROM node:16-alpine AS compiler
 WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm ci
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+RUN npm i -g pnpm
+RUN pnpm i --frozen-lockfile
 COPY tsconfig.json ./
 COPY src src
-RUN npm run compile
+RUN pnpm run compile
 
 # Install
 FROM node:16-alpine AS installer
 ENV NODE_ENV=production
 WORKDIR /usr/src/app
-COPY package*.json ./
-RUN npm ci --ignore-scripts
+COPY package.json ./
+COPY pnpm-lock.yaml ./
+RUN npm i -g pnpm
+RUN pnpm i --frozen-lockfile --ignore-scripts
 COPY --from=compiler /usr/src/app/dist /usr/src/app
 
 # Run
