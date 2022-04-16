@@ -2,23 +2,29 @@ import { capitalize } from "../../utils";
 
 import type { BulRegionApi, RegionWorkStatus } from "../../api/types";
 
-const _formatRegion = (data: BulRegionApi) => `<b>${data.region_name}</b>
+const _formatRegion = (data: BulRegionApi) => {
+	return `<b>${data.region_name}</b>
 
 Unità immobiliari totali: ${data.people_data.houses}
 Città: ${data.people_data.cities}`;
+};
 
-const _formatRegionWorkStatus = (status: RegionWorkStatus) =>
-	Object.entries(status)
-		.map(([k, v]) => `    ${capitalize(k)}: ${v}`)
+const _formatRegionWorkStatus = (status: RegionWorkStatus) => {
+	return Object.entries(status)
+		.map(([k, v]) => {
+			return `    ${capitalize(k)}: ${v}`;
+		})
 		.join("\n");
+};
 
-export const formatRegionFiber = (data: BulRegionApi) => `${_formatRegion(data)}
+export const formatRegionFiber = (data: BulRegionApi) => {
+	return `${_formatRegion(data)}
 
 <b>Fibra ottica</b>  🌐
 
 Percentuale completamento: <b>${
-	Math.round(data.work_progress.mean_status.fiber * 10) / 10
-}%</b>
+		Math.round(data.work_progress.mean_status.fiber * 10) / 10
+	}%</b>
 
 Intervento diretto:
   Città pianificate: ${data.intervento.diretto.fiber}
@@ -31,14 +37,16 @@ Concessione:
 
   Stato lavori:
 ${_formatRegionWorkStatus(data.work_progress.concessione.fiber.status)}`;
+};
 
-export const formatRegionFwa = (data: BulRegionApi) => `${_formatRegion(data)}
+export const formatRegionFwa = (data: BulRegionApi) => {
+	return `${_formatRegion(data)}
 
 <b>FWA</b>  📡
 
 Percentuale completamento: <b>${
-	Math.round(data.work_progress.mean_status.wireless * 10) / 10
-}%</b>
+		Math.round(data.work_progress.mean_status.wireless * 10) / 10
+	}%</b>
 
 Intervento diretto:
   Città pianificate: ${data.intervento.diretto.wireless}
@@ -51,3 +59,4 @@ Concessione:
 
   Stato lavori:
 ${_formatRegionWorkStatus(data.work_progress.concessione.wireless.status)}`;
+};

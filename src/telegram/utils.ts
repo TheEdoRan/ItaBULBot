@@ -28,18 +28,23 @@ export const replyToMessage = (
 			reply_to_message_id: ctx.message?.message_id,
 			reply_markup: inlineKeyboard?.reply_markup,
 		})
-		.catch(() => undefined);
+		.catch(() => {
+			return undefined;
+		});
 };
 
 // Operation error when editing message or when data fetching failed.
 // Edit the message with this error.
-export const editMessageWithError = (ctx: Context) =>
-	ctx
+export const editMessageWithError = (ctx: Context) => {
+	return ctx
 		.editMessageText(
 			"😕  <i>Qualcosa è andato storto nell'eseguire l'operazione.</i>\n\n❗ <b>ATTENZIONE</b> ❗️\n\n<b>L'errore quasi sicuramente non dipende da questo bot.</b>\n\nÈ molto probabile sia stato generato dalla temporanea indisponibilità di uno dei servizi che il bot utilizza per mostrare le informazioni:\n<b>BUL</b> e <b>Open Fiber</b> per i comuni e le regioni, <b>Fastweb AVT</b> per la ricerca degli indirizzi.",
 			baseExtraOpts
 		)
-		.catch(() => undefined);
+		.catch(() => {
+			return undefined;
+		});
+};
 
 // Custom ctx.editMessageText function, with sensible extra options and optional
 // inline keyboard.
@@ -54,5 +59,7 @@ export const editMessage = async (
 			...baseExtraOpts,
 			reply_markup: inlineKeyboard?.reply_markup,
 		})
-		.catch(() => undefined);
+		.catch(() => {
+			return undefined;
+		});
 };

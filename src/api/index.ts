@@ -13,18 +13,20 @@ const ofTimestamp = () => {
 	Math.round(date.getTime() / 1e3)).toString();
 };
 
-const ofDigest = (endpoint: string, timestamp: string) =>
-	crypto
+const ofDigest = (endpoint: string, timestamp: string) => {
+	return crypto
 		.createHmac("sha256", OF_SECRET)
 		.update(`GET:${endpoint}:${timestamp}`)
 		.digest("hex");
+};
 
 // BUL API
-export const bulApi = (endpoint: string) =>
-	axios.get(endpoint, {
+export const bulApi = (endpoint: string) => {
+	return axios.get(endpoint, {
 		baseURL: "https://bandaultralarga.italia.it/wp-json/bul/v1",
 		httpsAgent: new https.Agent({ rejectUnauthorized: false }),
 	});
+};
 
 // OF API
 export const ofApi = (end: string) => {
@@ -47,8 +49,8 @@ export const ofApi = (end: string) => {
 };
 
 // Address search (AVT) API
-export const avtApi = (endpoint: string) =>
-	axios.get(endpoint, {
+export const avtApi = (endpoint: string) => {
+	return axios.get(endpoint, {
 		baseURL: "https://www.fastweb.it/AVTSL/ajax",
 		headers: {
 			"accept": "application/json, text/javascript, */*; q=0.01",
@@ -67,3 +69,4 @@ export const avtApi = (endpoint: string) =>
 			"x-requested-with": "XMLHttpRequest",
 		},
 	});
+};

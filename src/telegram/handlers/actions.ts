@@ -7,22 +7,28 @@ export const handleActions = (bot: Telegraf<Context<Update>>) => {
 	// Wait button handler.
 	// Don't do anything (user shouldn't press the button), but we handle it
 	// so the query gets processed anyway.
-	bot.action(/^_wait_for_info$/, (ctx) =>
-		ctx.answerCbQuery().catch(() => undefined)
-	);
+	bot.action(/^_wait_for_info$/, (ctx) => {
+		return ctx.answerCbQuery().catch(() => {
+			return undefined;
+		});
+	});
 
 	// Fiber details handler.
 	// \d+: city/region id.
 	bot.action(/^show_fiber_details_(\d+)$/, async (ctx) => {
 		await showFiberData(ctx);
-		ctx.answerCbQuery().catch(() => undefined);
+		ctx.answerCbQuery().catch(() => {
+			return undefined;
+		});
 	});
 
 	// FWA details handler.
 	// \d+: city/region id.
 	bot.action(/^show_fwa_details_(\d+)$/, async (ctx) => {
 		await showFwaData(ctx);
-		ctx.answerCbQuery().catch(() => undefined);
+		ctx.answerCbQuery().catch(() => {
+			return undefined;
+		});
 	});
 
 	// PCN details handler.
@@ -30,6 +36,8 @@ export const handleActions = (bot: Telegraf<Context<Update>>) => {
 	// \d+: city id.
 	bot.action(/^show_pcn_details_(\w+)_(\d+)$/, async (ctx) => {
 		await showPcnData(ctx);
-		ctx.answerCbQuery().catch(() => undefined);
+		ctx.answerCbQuery().catch(() => {
+			return undefined;
+		});
 	});
 };

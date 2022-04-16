@@ -14,31 +14,39 @@ const buildInlineResult = (
 	id: number | string,
 	title: string,
 	description?: string
-): InlineQueryResultArticle => ({
-	type: "article",
-	id: id.toString(),
-	title,
-	description,
-	input_message_content: {
-		message_text: "<i>Scaricando informazioni...</i>",
-		parse_mode: "HTML",
-	},
-	...Markup.inlineKeyboard([
-		Markup.button.callback("🕙  Attendi", "_wait_for_info"),
-	]),
-});
+): InlineQueryResultArticle => {
+	return {
+		type: "article",
+		id: id.toString(),
+		title,
+		description,
+		input_message_content: {
+			message_text: "<i>Scaricando informazioni...</i>",
+			parse_mode: "HTML",
+		},
+		...Markup.inlineKeyboard([
+			Markup.button.callback("🕙  Attendi", "_wait_for_info"),
+		]),
+	};
+};
 
-export const getLevel = (id: string): CityRegionLevel =>
-	parseInt(id) > 21 ? "city" : "region";
+export const getLevel = (id: string): CityRegionLevel => {
+	return parseInt(id) > 21 ? "city" : "region";
+};
 
-export const getCityIdFromName = (cityName: string): number | undefined =>
-	cities.find((c) => c.name.toLowerCase() === cityName.toLowerCase())?.id;
+export const getCityIdFromName = (cityName: string): number | undefined => {
+	return cities.find((c) => {
+		return c.name.toLowerCase() === cityName.toLowerCase();
+	})?.id;
+};
 
 export const getRegionIdFromCityId = (cityId: string): string | undefined => {
-	const regionName = cities.find(
-		(c) => c.id.toString() === cityId
-	)?.region_name;
-	const regionId = regions.find((r) => r.name === regionName)?.id;
+	const regionName = cities.find((c) => {
+		return c.id.toString() === cityId;
+	})?.region_name;
+	const regionId = regions.find((r) => {
+		return r.name === regionName;
+	})?.id;
 
 	return regionId?.toString();
 };
@@ -50,13 +58,23 @@ export const buildInlineResults = async (
 	// Higher priority for city/region search.
 	let results = [
 		...regions
-			.filter((r) => substring(r.name, query))
-			.map((r) => buildInlineResult(r.id, r.name, "Regione")),
+			.filter((r) => {
+				return substring(r.name, query);
+			})
+			.map((r) => {
+				return buildInlineResult(r.id, r.name, "Regione");
+			}),
 		...cities
-			.filter((c) => substring(c.name, query))
-			.map((c) => buildInlineResult(c.id, c.name, c.region_name)),
+			.filter((c) => {
+				return substring(c.name, query);
+			})
+			.map((c) => {
+				return buildInlineResult(c.id, c.name, c.region_name);
+			}),
 	]
-		.sort((a, b) => a.title.length - b.title.length)
+		.sort((a, b) => {
+			return a.title.length - b.title.length;
+		})
 		.slice(0, 10);
 
 	// If no city/region matches, switch to address search.
@@ -66,7 +84,9 @@ export const buildInlineResults = async (
 			const addresses = await Fetch.searchAddresses(query);
 
 			results = addresses
-				.filter((a) => a.level === "street" && a.number)
+				.filter((a) => {
+					return a.level === "street" && a.number;
+				})
 				.map(({ id: streetId, street, number, city, province, exponent }) => {
 					const exponentString = exponent ? `/${exponent.toUpperCase()}` : "";
 

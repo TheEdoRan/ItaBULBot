@@ -13,9 +13,8 @@ const _getWorkType = (workType: string) => {
 	}
 };
 
-export const formatAddress = (data: BulEgonDataApi, province: string) => `<b>${
-	data.indirizzo_compl
-}</b> - <i>${data.comune} (${province})</i>
+export const formatAddress = (data: BulEgonDataApi, province: string) => {
+	return `<b>${data.indirizzo_compl}</b> - <i>${data.comune} (${province})</i>
 
 Tipologia civico:
   <b>${_getWorkType(data.tipo_intervento)}</b>
@@ -36,6 +35,8 @@ Numero operatori privati attivi al 2021:
   <code>${
 		data.operatori_rame_30_100 || "0"
 	}</code>  30 Mbit/s - 100 Mbit/s - <b>FTTC</b>`;
+};
 
-export const formatAddressNotFound = () =>
-	"❌  <i>Nessun dato trovato per questo numero civico.</i>";
+export const formatAddressNotFound = () => {
+	return "❌  <i>Nessun dato trovato per questo numero civico.</i>";
+};

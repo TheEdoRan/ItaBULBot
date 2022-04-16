@@ -1,9 +1,8 @@
 import escape from "escape-html";
 
 // /start & /aiuto
-export const startHelpCommand = (firstName: string) => `Ciao <b>${escape(
-	firstName
-)}</b> 👋!
+export const startHelpCommand = (firstName: string) => {
+	return `Ciao <b>${escape(firstName)}</b> 👋!
 Questo bot ti aiuterà a scoprire qual è lo stato dei lavori di fibra ottica/FWA, finanziati dal progetto <i>BandaUltraLarga</i> (<b>#BUL</b>) in una determinata regione o città, da te scelta.
 
 <b>Funzionamento</b>  🔍
@@ -32,11 +31,11 @@ Il codice sorgente e la relativa documentazione si possono trovare a <a href="ht
 <b>Contatti</b>  👤
 Sono ben accetti feedback, per quanto riguarda segnalazioni di bug, proposte per miglioramenti o domande in generale sul funzionamento del bot stesso.
 Puoi contattarmi sia su <a href="https://github.com/theedoran/itabulbot">GitHub</a> aprendo una issue, oppure in privato qui su Telegram, a @TheEdoRan.`;
+};
 
 // /indirizzo
-export const addressCommand = (firstName: string) => `Ciao <b>${escape(
-	firstName
-)}</b> 👋!
+export const addressCommand = (firstName: string) => {
+	return `Ciao <b>${escape(firstName)}</b> 👋!
 Questo bot supporta anche la ricerca per indirizzo, come presente sul sito <b>BUL</b>.
 
 Ti basterà premere sul bottone qui sotto per avviare la ricerca di un qualsiasi indirizzo, compreso di <b>numero civico</b>, come ad esempio:
@@ -51,3 +50,4 @@ Ti basterà scrivere un indirizzo a tua scelta, proprio come qui in chat privata
 
 <b>Fai attenzione, però</b>: se deciderai di utilizzare il bot in gruppi pubblici, <b>tutti potranno vedere l'indirizzo cercato</b>.
 Il consiglio è quindi di utilizzare la ricerca per indirizzo in questa chat.`;
+};

@@ -9,5 +9,6 @@ export const formatLatestUpdate = (date: string) => {
 	return `\n\n<i>Ultimo aggiornamento alle ${time} del ${day}</i>`;
 };
 
-export const formatLatestUpdateError = () =>
-	`\n<i>Non è stato possibile ricavare la data dell'ultimo aggiornamento</i>`;
+export const formatLatestUpdateError = () => {
+	return `\n<i>Non è stato possibile ricavare la data dell'ultimo aggiornamento</i>`;
+};

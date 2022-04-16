@@ -34,7 +34,9 @@ export class Fetch {
 	// Get data from BUL and OF APIs.
 	@Memoize({
 		...(memoOpts as object),
-		hashFunction: (level: CityRegionLevel, id: number) => `${level}~${id}`,
+		hashFunction: (level: CityRegionLevel, id: number) => {
+			return `${level}~${id}`;
+		},
 	})
 	static async data(
 		level: CityRegionLevel,
@@ -57,7 +59,9 @@ export class Fetch {
 			// Call OF API to find out OF city id, via its name.
 			const ofCityId: OfProvinceApi = (
 				await ofApi(`/list/cities/${provId}`)
-			).data.data.find((city: City) => city.name === cityName).id;
+			).data.data.find((city: City) => {
+				return city.name === cityName;
+			}).id;
 
 			const ofCityData: OfCityApi = (await ofApi(`/site/${ofCityId}`)).data;
 
@@ -110,8 +114,12 @@ export class Fetch {
 		// Check which "toponomastico" element is equal to this house number.
 		// If not found, try to find house number without exponent (e.g. 13/L -> 13).
 		const numberData =
-			data.resp.find((c) => c.toponomastico === uppercaseNumber) ||
-			data.resp.find((c) => number.includes(c.toponomastico));
+			data.resp.find((c) => {
+				return c.toponomastico === uppercaseNumber;
+			}) ||
+			data.resp.find((c) => {
+				return number.includes(c.toponomastico);
+			});
 
 		// If no data found for this house number, throw a new error.
 		if (!numberData) {

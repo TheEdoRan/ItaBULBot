@@ -16,10 +16,12 @@ if (!fs.existsSync(JSON_PATH)) {
 		// Fetch region IDs.
 		let { data: regions } = await bulApi("/regions");
 
-		regions = regions.map((r: { region_id: number; region_name: string }) => ({
-			id: r.region_id,
-			name: r.region_name,
-		}));
+		regions = regions.map((r: { region_id: number; region_name: string }) => {
+			return {
+				id: r.region_id,
+				name: r.region_name,
+			};
+		});
 
 		// Write regions to JSON.
 		fs.writeFileSync(
@@ -39,11 +41,13 @@ if (!fs.existsSync(JSON_PATH)) {
 				const { data: citiesData } = await bulApi(`/region/${r.id}/cities`);
 
 				allCities.push(
-					...citiesData.map((c: { city_id: number; city_name: string }) => ({
-						id: c.city_id,
-						name: c.city_name,
-						region_name: r.name,
-					}))
+					...citiesData.map((c: { city_id: number; city_name: string }) => {
+						return {
+							id: c.city_id,
+							name: c.city_name,
+							region_name: r.name,
+						};
+					})
 				);
 			})
 		);

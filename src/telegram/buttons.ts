@@ -2,23 +2,30 @@ import { Markup } from "telegraf";
 
 import { FiberFwa } from "../data/types";
 
-export const StartHelpButton = () =>
-	Markup.button.switchToCurrentChat(
+export const StartHelpButton = () => {
+	return Markup.button.switchToCurrentChat(
 		"🔍  Cerca un comune, una regione o un indirizzo",
 		""
 	);
+};
 
-export const FiberButton = (id: string) =>
-	Markup.button.callback("🌐  Dettagli fibra", `show_fiber_details_${id}`);
+export const FiberButton = (id: string) => {
+	return Markup.button.callback(
+		"🌐  Dettagli fibra",
+		`show_fiber_details_${id}`
+	);
+};
 
-export const FwaButton = (id: string) =>
-	Markup.button.callback("📡  Dettagli FWA", `show_fwa_details_${id}`);
+export const FwaButton = (id: string) => {
+	return Markup.button.callback("📡  Dettagli FWA", `show_fwa_details_${id}`);
+};
 
-export const PcnButton = (id: string, prevStatus: FiberFwa) =>
-	Markup.button.callback(
+export const PcnButton = (id: string, prevStatus: FiberFwa) => {
+	return Markup.button.callback(
 		"🗄️  Dettagli PCN",
 		`show_pcn_details_${prevStatus}_${id}`
 	);
+};
 
 export const PcnLocalizeButton = ({
 	latitude,
@@ -26,17 +33,19 @@ export const PcnLocalizeButton = ({
 }: {
 	latitude: number;
 	longitude: number;
-}) =>
-	Markup.button.url(
+}) => {
+	return Markup.button.url(
 		"🗺  Localizza sulla mappa",
 		`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`
 	);
+};
 
-export const GoBackButton = (id: string, prevStatus: FiberFwa) =>
-	Markup.button.callback(
+export const GoBackButton = (id: string, prevStatus: FiberFwa) => {
+	return Markup.button.callback(
 		"◀️  Torna indietro",
 		`show_${prevStatus}_details_${id}`
 	);
+};
 
 export const BulButton = (
 	id: string | { regionId: string; cityId: string; egonId: string },
