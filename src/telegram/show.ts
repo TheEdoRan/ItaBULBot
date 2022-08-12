@@ -1,6 +1,5 @@
-/* eslint-disable import/no-cycle */
-
-import { Context, Markup } from "telegraf";
+import type { Context } from "telegraf";
+import { Markup } from "telegraf";
 import { clear } from "typescript-memoize";
 
 import {
@@ -13,7 +12,7 @@ import {
 } from "./buttons";
 import { editMessage, editMessageWithError } from "./utils";
 
-import { BulRegionApi } from "../api/types";
+import type { BulRegionApi } from "../api/types";
 import { Fetch } from "../data/fetch";
 import { getLevel, getRegionIdFromCityId } from "../data/utils";
 import { formatLatestUpdate, formatLatestUpdateError } from "../format/data";
@@ -23,9 +22,9 @@ import { formatPcnData } from "../format/data/pcn";
 import { formatRegionFiber, formatRegionFwa } from "../format/data/region";
 import { insertAtIndex } from "../utils";
 
+import type { Update } from "typegram";
 import type { BulCityAndOf, FiberFwa } from "../data/types";
 import type { BotActionContext } from "./types";
-import type { Update } from "typegram";
 
 export const showLatestUpdate = async () => {
 	try {
@@ -39,7 +38,9 @@ export const showLatestUpdate = async () => {
 };
 
 export const showFiberData = async (ctx: BotActionContext) => {
-	const id = ctx.chosenInlineResult?.result_id || ctx.match.slice(1)[0];
+	const id = (ctx.chosenInlineResult?.result_id ||
+		ctx.match.slice(1)[0]) as string;
+
 	const level = getLevel(id);
 
 	let message = "";
@@ -47,14 +48,14 @@ export const showFiberData = async (ctx: BotActionContext) => {
 	try {
 		const data = await Fetch.data(level, id);
 
-		const buttons = [[FwaButton(id)], [BulButton(id, "fiber")]];
+		const buttons: any[][] = [[FwaButton(id)], [BulButton(id, "fiber")]];
 
 		// City level.
 		if (level === "city") {
 			const cityData = data as BulCityAndOf;
 
 			if (cityData.pcn) {
-				buttons[0][1] = PcnButton(id, "fiber");
+				buttons[0]?.push(PcnButton(id, "fiber"));
 			}
 
 			message = formatCityFiber(cityData);
@@ -64,16 +65,17 @@ export const showFiberData = async (ctx: BotActionContext) => {
 			message = formatRegionFiber(regionData);
 		}
 
-		editMessage(ctx, message, Markup.inlineKeyboard(buttons));
+		// eslint-disable-next-line
+		await editMessage(ctx, message, Markup.inlineKeyboard(buttons));
 	} catch (e: any) {
 		clear(["data"]);
 		console.error(`showFiberData error: ${e?.message}`);
-		editMessageWithError(ctx);
+		await editMessageWithError(ctx);
 	}
 };
 
 export const showFwaData = async (ctx: BotActionContext) => {
-	const id = ctx.match.slice(1)[0];
+	const id = ctx.match.slice(1)[0] as string;
 	const level = getLevel(id);
 
 	let message = "";
@@ -81,14 +83,14 @@ export const showFwaData = async (ctx: BotActionContext) => {
 	try {
 		const data = await Fetch.data(level, id);
 
-		const buttons = [[FiberButton(id)], [BulButton(id, "fwa")]];
+		const buttons: any[][] = [[FiberButton(id)], [BulButton(id, "fwa")]];
 
 		// City level.
 		if (level === "city") {
 			const cityData = data as BulCityAndOf;
 
 			if (cityData.pcn) {
-				buttons[0][1] = PcnButton(id, "fwa");
+				buttons[0]?.push(PcnButton(id, "fwa"));
 			}
 
 			message = formatCityFwa(cityData);
@@ -98,16 +100,17 @@ export const showFwaData = async (ctx: BotActionContext) => {
 			message = formatRegionFwa(regionData);
 		}
 
-		editMessage(ctx, message, Markup.inlineKeyboard(buttons));
+		// eslint-disable-next-line
+		await editMessage(ctx, message, Markup.inlineKeyboard(buttons));
 	} catch (e: any) {
 		clear(["data"]);
 		console.error(`showFwaData error: ${e?.message}`);
-		editMessageWithError(ctx);
+		await editMessageWithError(ctx);
 	}
 };
 
 export const showPcnData = async (ctx: BotActionContext) => {
-	const [prevStatus, cityId] = ctx.match.slice(1);
+	const [prevStatus, cityId] = ctx.match.slice(1) as [string, string];
 
 	try {
 		const { pcn: pcnData, city_name: cityName } = (await Fetch.data(
@@ -124,8 +127,8 @@ export const showPcnData = async (ctx: BotActionContext) => {
 
 		// Display localize PCN button only if there are coordinates for this
 		// shelter.
-		if (pcnFeatures?.length && pcnFeatures[0].geometry) {
-			const [longitude, latitude] = pcnFeatures[0].geometry.coordinates;
+		if (pcnFeatures?.length && pcnFeatures[0]!.geometry) {
+			const [longitude, latitude] = pcnFeatures[0]!.geometry.coordinates;
 
 			// Insert localize button before the "go back" one.
 			buttons = insertAtIndex(buttons, 1, [
@@ -133,7 +136,7 @@ export const showPcnData = async (ctx: BotActionContext) => {
 			]);
 		}
 
-		editMessage(
+		await editMessage(
 			ctx,
 			formatPcnData(pcnData!, cityName),
 			Markup.inlineKeyboard(buttons)
@@ -141,7 +144,7 @@ export const showPcnData = async (ctx: BotActionContext) => {
 	} catch (e: any) {
 		clear(["data"]);
 		console.error(`showPcnData error: ${e?.message}`);
-		editMessageWithError(ctx);
+		await editMessageWithError(ctx);
 	}
 };
 
@@ -149,7 +152,7 @@ export const showAddressData = async (ctx: Context<Update>) => {
 	// Get info from result id.
 	const [cityId, streetId, province, number] = ctx
 		.chosenInlineResult!.result_id.match(/^address_(\d+)_(\d+)_(.+)_(.+)$/)!
-		.slice(1);
+		.slice(1) as [string, string, string, string];
 
 	try {
 		// Get egonId from API.
@@ -168,7 +171,7 @@ export const showAddressData = async (ctx: Context<Update>) => {
 
 		const buttons = [[BulButton({ regionId, cityId, egonId }, "address")]];
 
-		editMessage(
+		await editMessage(
 			ctx,
 			formatAddress(data, province),
 			Markup.inlineKeyboard(buttons)
@@ -176,10 +179,11 @@ export const showAddressData = async (ctx: Context<Update>) => {
 	} catch (e: any) {
 		console.error(`showAddressData error: ${e?.message}`);
 		if (
-			e?.message === "numberInfo: Could not fetch data for this house number."
+			e?.message ===
+			"numberInfo: Could not fetch data for this house number."
 		) {
 			return editMessage(ctx, formatAddressNotFound(), undefined, false);
 		}
-		editMessageWithError(ctx);
+		await editMessageWithError(ctx);
 	}
 };

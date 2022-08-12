@@ -1,3 +1,0 @@
-{
-  "*.{js,ts}": "eslint . --ext .js,.ts --no-cache --fix"
-}

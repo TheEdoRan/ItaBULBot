@@ -1,6 +1,6 @@
 import { buildInlineResults } from "../../data/utils";
 import { showAddressData, showFiberData } from "../show";
-import { BotActionContext } from "../types";
+import type { BotActionContext } from "../types";
 
 import type { Telegraf, Context } from "telegraf";
 import type { ExtraAnswerInlineQuery } from "telegraf/typings/telegram-types";

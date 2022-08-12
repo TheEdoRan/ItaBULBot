@@ -1,4 +1,4 @@
-import { BulCityApi, OfCityApi } from "../../api/types";
+import type { BulCityApi, OfCityApi } from "../../api/types";
 
 export interface Region {
 	id: number;

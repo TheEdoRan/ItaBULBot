@@ -1,5 +1,3 @@
-/* eslint-disable import/no-cycle */
-
 import { showLatestUpdate } from "./show";
 
 import type { Context, Markup } from "telegraf";
@@ -21,16 +19,14 @@ export const replyToMessage = (
 	text: string,
 	inlineKeyboard?: Markup.Markup<InlineKeyboardMarkup>
 ) => {
-	ctx
-		.reply(text, {
-			...baseExtraOpts,
-			allow_sending_without_reply: true,
-			reply_to_message_id: ctx.message?.message_id,
-			reply_markup: inlineKeyboard?.reply_markup,
-		})
-		.catch(() => {
-			return undefined;
-		});
+	ctx.reply(text, {
+		...baseExtraOpts,
+		allow_sending_without_reply: true,
+		reply_to_message_id: ctx.message?.message_id,
+		reply_markup: inlineKeyboard?.reply_markup,
+	}).catch(() => {
+		return undefined;
+	});
 };
 
 // Operation error when editing message or when data fetching failed.
@@ -52,14 +48,15 @@ export const editMessage = async (
 	ctx: Context,
 	text: string,
 	inlineKeyboard?: Markup.Markup<InlineKeyboardMarkup>,
-	latestUpdate: boolean = true
+	latestUpdate = true
 ) => {
-	ctx
-		.editMessageText(`${text}${latestUpdate ? await showLatestUpdate() : ""}`, {
+	ctx.editMessageText(
+		`${text}${latestUpdate ? await showLatestUpdate() : ""}`,
+		{
 			...baseExtraOpts,
 			reply_markup: inlineKeyboard?.reply_markup,
-		})
-		.catch(() => {
-			return undefined;
-		});
+		}
+	).catch(() => {
+		return undefined;
+	});
 };

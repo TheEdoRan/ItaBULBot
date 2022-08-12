@@ -1,4 +1,4 @@
-import { AxiosResponse } from "axios";
+import type { AxiosResponse } from "axios";
 import { Memoize } from "typescript-memoize";
 
 import { avtApi, bulApi, ofApi } from "../api";
@@ -16,7 +16,8 @@ import type {
 	OfCityApi,
 	OfProvinceApi,
 } from "../api/types";
-import type { BulCityAndOf, City, CityRegionLevel } from "./types";
+import type { BulCityAndOf, City } from "./types";
+import { CityRegionLevel } from "./types";
 
 const memoOpts: Parameters<typeof Memoize>[0] = {
 	// Memo expiration: 6 hours.
@@ -63,7 +64,8 @@ export class Fetch {
 				return city.name === cityName;
 			}).id;
 
-			const ofCityData: OfCityApi = (await ofApi(`/site/${ofCityId}`)).data;
+			const ofCityData: OfCityApi = (await ofApi(`/site/${ofCityId}`))
+				.data;
 
 			// OF fetch successful, put OF data in return object.
 			return {

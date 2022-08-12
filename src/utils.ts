@@ -3,7 +3,11 @@ export const substring = (s1: string, s2: string) => {
 };
 
 export const capitalize = (s: string) => {
-	return s[0].toLocaleUpperCase() + s.slice(1);
+	if (s.length < 1) {
+		return "";
+	}
+
+	return s[0]!.toLocaleUpperCase() + s.slice(1);
 };
 
 // Insert in array at specific index.

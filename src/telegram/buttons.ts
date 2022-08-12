@@ -1,6 +1,6 @@
 import { Markup } from "telegraf";
 
-import { FiberFwa } from "../data/types";
+import type { FiberFwa } from "../data/types";
 
 export const StartHelpButton = () => {
 	return Markup.button.switchToCurrentChat(

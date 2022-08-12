@@ -1,31 +1,33 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "module": "CommonJS",
-    "lib": [],
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "outDir": "./dist",
-    "moduleResolution": "node",
-    "removeComments": true,
-    "noImplicitAny": true,
-    "strict": true,
-    "strictPropertyInitialization": false,
-    "useUnknownInCatchVariables": false,
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitThis": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "resolveJsonModule": true,
-    "baseUrl": "./src",
-    "paths": {
-      "@/*": ["./*"]
-    }
-  },
-  "exclude": ["node_modules"],
-  "include": ["./src/**/*.ts"]
+	"compilerOptions": {
+		"target": "ESNext",
+		"module": "CommonJS",
+		"lib": [],
+		"skipLibCheck": true,
+		"sourceMap": true,
+		"outDir": "./dist",
+		"moduleResolution": "node",
+		"removeComments": true,
+		"strict": true,
+		"strictPropertyInitialization": false,
+		"useUnknownInCatchVariables": false,
+		"forceConsistentCasingInFileNames": true,
+		"noImplicitAny": true,
+		"noImplicitThis": true,
+		"noImplicitReturns": true,
+		"noUncheckedIndexedAccess": true,
+		"noFallthroughCasesInSwitch": true,
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": true,
+		"resolveJsonModule": true,
+		"incremental": false,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"baseUrl": "./src",
+		"paths": {
+			"@/*": ["./*"]
+		}
+	},
+	"exclude": ["node_modules"],
+	"include": ["./src/**/*.ts"]
 }

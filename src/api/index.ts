@@ -59,7 +59,8 @@ export const avtApi = (endpoint: string) => {
 			"connection": "keep-alive",
 			"DNT": "1",
 			"host": "www.fastweb.it",
-			"referer": "https://www.fastweb.it/AVT/Start/?layout=standalone&modal",
+			"referer":
+				"https://www.fastweb.it/AVT/Start/?layout=standalone&modal",
 			"sec-fetch-dest": "empty",
 			"sec-fetch-mode": "cors",
 			"sec-fetch-site": "same-origin",
