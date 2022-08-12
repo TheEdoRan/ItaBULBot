@@ -4,8 +4,6 @@ import https from "https";
 import axios from "axios";
 
 // Open Fiber utils
-const OF_SECRET = "6Yk9SPasgejjkapLJ5EkZwBhxFY8eLGLbBaqkfY8ymtFsaJr";
-
 const ofTimestamp = () => {
 	const date = new Date();
 	return (date.setMinutes(10 * Math.floor(date.getMinutes() / 10)),
@@ -15,7 +13,7 @@ const ofTimestamp = () => {
 
 const ofDigest = (endpoint: string, timestamp: string) => {
 	return crypto
-		.createHmac("sha256", OF_SECRET)
+		.createHmac("sha256", process.env.OF_SECRET!)
 		.update(`GET:${endpoint}:${timestamp}`)
 		.digest("hex");
 };
