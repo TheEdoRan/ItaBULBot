@@ -23,7 +23,7 @@ handleCommands(bot);
 handleEvents(bot);
 handleActions(bot);
 
-bot.launch();
+bot.launch().catch(() => undefined);
 
 console.info("bot started");
 

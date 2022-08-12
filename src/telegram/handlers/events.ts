@@ -2,7 +2,7 @@ import { buildInlineResults } from "../../data/utils";
 import { showAddressData, showFiberData } from "../show";
 import type { BotActionContext } from "../types";
 
-import type { Telegraf, Context } from "telegraf";
+import type { Context, Telegraf } from "telegraf";
 import type { ExtraAnswerInlineQuery } from "telegraf/typings/telegram-types";
 import type { Update } from "typegram";
 
@@ -27,14 +27,14 @@ export const handleEvents = (bot: Telegraf<Context<Update>>) => {
 		});
 	});
 
-	bot.on("chosen_inline_result", (ctx) => {
+	bot.on("chosen_inline_result", async (ctx) => {
 		// If address search, show address data.
 		if (ctx.chosenInlineResult.result_id.startsWith("address_")) {
-			showAddressData(ctx);
+			await showAddressData(ctx);
 			return;
 		}
 
 		// Otherwise, show fiber data (default page).
-		showFiberData(ctx as BotActionContext);
+		await showFiberData(ctx as BotActionContext);
 	});
 };

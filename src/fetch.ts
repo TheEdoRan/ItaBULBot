@@ -11,17 +11,19 @@ if (!fs.existsSync(JSON_PATH)) {
 	fs.mkdirSync(JSON_PATH);
 }
 
-(async () => {
+const fetch = async () => {
 	try {
 		// Fetch region IDs.
 		let { data: regions } = await bulApi("/regions");
 
-		regions = regions.map((r: { region_id: number; region_name: string }) => {
-			return {
-				id: r.region_id,
-				name: r.region_name,
-			};
-		});
+		regions = regions.map(
+			(r: { region_id: number; region_name: string }) => {
+				return {
+					id: r.region_id,
+					name: r.region_name,
+				};
+			}
+		);
 
 		// Write regions to JSON.
 		fs.writeFileSync(
@@ -33,21 +35,26 @@ if (!fs.existsSync(JSON_PATH)) {
 		console.log("Successfully wrote regions to file!");
 
 		// Initialize cities array.
-		const allCities: { id: number; name: string; region_name: string }[] = [];
+		const allCities: { id: number; name: string; region_name: string }[] =
+			[];
 
 		await Promise.all(
 			regions.map(async (r: { id: number; name: string }) => {
 				// Get cities for the region.
-				const { data: citiesData } = await bulApi(`/region/${r.id}/cities`);
+				const { data: citiesData } = await bulApi(
+					`/region/${r.id}/cities`
+				);
 
 				allCities.push(
-					...citiesData.map((c: { city_id: number; city_name: string }) => {
-						return {
-							id: c.city_id,
-							name: c.city_name,
-							region_name: r.name,
-						};
-					})
+					...citiesData.map(
+						(c: { city_id: number; city_name: string }) => {
+							return {
+								id: c.city_id,
+								name: c.city_name,
+								region_name: r.name,
+							};
+						}
+					)
 				);
 			})
 		);
@@ -63,4 +70,6 @@ if (!fs.existsSync(JSON_PATH)) {
 	} catch (e: any) {
 		console.error(e?.message);
 	}
-})();
+};
+
+fetch().catch(() => undefined);

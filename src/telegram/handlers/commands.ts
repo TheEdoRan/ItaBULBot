@@ -1,15 +1,16 @@
 import { Markup } from "telegraf";
 
-import { startHelpCommand, addressCommand } from "../../format/commands";
+import { addressCommand, startHelpCommand } from "../../format/commands";
 import { StartHelpButton } from "../buttons";
 import { replyToMessage } from "../utils";
 
-import type { Telegraf, Context } from "telegraf";
+import type { Context, Telegraf } from "telegraf";
 import type { Update } from "typegram";
 
 // Private chat only middleware.
 const isPrivateChat = (ctx: Context, next: () => Promise<void>) => {
 	if (ctx.chat?.type === "private") {
+		// eslint-disable-next-line @typescript-eslint/no-floating-promises
 		next();
 	}
 };
