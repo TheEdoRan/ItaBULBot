@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"description": "Bot Telegram per riepilogare lo stato dei lavori del progetto BUL in Italia.",
 	"scripts": {
-		"prepare": "husky install",
+		"prepare": "is-ci || husky install",
 		"fetch": "node ./fetch.js",
 		"dev": "nodemon --watch 'src/**' --ext 'js,ts,json' --exec 'ts-node src/bot.ts'",
 		"lint": "eslint ."
@@ -29,6 +29,7 @@
 		"dayjs": "^1.11.4",
 		"dotenv": "^16.0.1",
 		"escape-html": "^1.0.3",
+		"is-ci": "^3.0.1",
 		"module-alias": "^2.2.2",
 		"telegraf": "^4.8.6",
 		"typegram": "^3.10.0",
