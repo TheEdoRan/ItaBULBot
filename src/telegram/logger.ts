@@ -23,7 +23,10 @@ export const logger = (): MiddlewareFn<Context<Update>> => {
 		} else if (ctx.chosenInlineResult) {
 			msgInfo = `chosen -> ${ctx.chosenInlineResult.result_id}`;
 		} else {
-			msgInfo = ctx.callbackQuery?.data || textMessage.text;
+			msgInfo =
+				ctx.callbackQuery && "data" in ctx.callbackQuery
+					? ctx.callbackQuery.data
+					: textMessage.text;
 		}
 
 		// If empty string, skip logging.
